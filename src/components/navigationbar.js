@@ -14,7 +14,19 @@ const Navbar = () => {
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [isProfileHovered, setIsProfileHovered] = useState(false);
+  const [role, setRole] = useState(null);
   let hoverTimeout;
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedRole = localStorage.getItem("role");
+      setRole(storedRole);
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("User role:", role);
+  }, [role]);
 
   const handleMouseEnter = (index) => {
     clearTimeout(hoverTimeout);
@@ -38,31 +50,59 @@ const Navbar = () => {
     }, 300);
   };
 
-  const links = [
-    { href: "/dashboard", label: "Beranda" },
+  const allLinks = [
+    {
+      href: "/dashboard",
+      label: "Beranda",
+      roles: [
+        "superadmin",
+        "Tim Teknis Balai",
+        "PJ Balai",
+        "Petugas Lapangan",
+        "Koordinator Provinsi",
+        "Pengolah Data",
+        "Pengawas",
+      ],
+    },
     {
       href: "",
       label: "Perencanaan Data",
       activePath: "/perencanaan_data",
+      roles: ["superadmin", "Tim Teknis Balai"],
     },
     {
       href: "/pengumpulan_data/pengawas/informasi_tahap_pengumpulan",
       label: "Pengumpulan Data",
       activePath: "/pengumpulan_data",
+      roles: ["superadmin", "Petugas Lapangan", "Pengolah Data", "Pengawas"],
     },
     {
       href: "/pemeriksaan_data/informasi_pemeriksaan_data",
       label: "Pemeriksaan",
       activePath: "/pemeriksaan_data",
+      roles: ["superadmin", "Pengolah Data", "Koordinator Provinsi"],
     },
-    { href: "", label: "Responden/Vendor", activePath: "/vendor" },
-    { href: "", label: "Monitoring", activePath: "/pj_balai" },
+    {
+      href: "",
+      label: "Responden/Vendor",
+      activePath: "/vendor",
+      roles: ["superadmin", "Tim Teknis Balai"],
+    },
+    {
+      href: "",
+      label: "Monitoring",
+      activePath: "/pj_balai",
+      roles: ["superadmin", "PJ Balai"],
+    },
     {
       href: "/user_role/user_role",
       label: "Assign User",
       activePath: "/user_role",
+      roles: ["superadmin"],
     },
   ];
+
+  const links = allLinks.filter((link) => link.roles.includes(role));
 
   useEffect(() => {
     const handleScroll = () => {

@@ -69,17 +69,30 @@ const Login = () => {
 
       const roleData = await roleResponse.json();
 
+      // Tambahkan console.log untuk memeriksa isi roleData
+      console.log("Role Data:", roleData);
+
       if (roleData.status !== "success") {
         throw new Error("Gagal memeriksa role pengguna.");
       }
 
       // Simpan role ke localStorage atau state global
-      localStorage.setItem("role", roleData.role);
+      localStorage.setItem("role", roleData.data);
 
       // Redirect berdasarkan role
-      if (roleData.role === "superadmin") {
-        router.push("/admin-dashboard");
-      } else if (roleData.role === "Tim Teknis Balai") {
+      if (roleData.data === "superadmin") {
+        router.push("/dashboard");
+      } else if (roleData.data === "Tim Teknis Balai") {
+        router.push("/dashboard");
+      } else if (roleData.data === "PJ Balai") {
+        router.push("/dashboard");
+      } else if (roleData.data === "Petugas Lapangan") {
+        router.push("/dashboard");
+      } else if (roleData.data === "Pengolah Data") {
+        router.push("/dashboard");
+      } else if (roleData.data === "Koordinator Provinsi") {
+        router.push("/dashboard");
+      } else if (roleData.data === "Pengawas") {
         router.push("/dashboard");
       } else {
         throw new Error("Role tidak dikenali.");

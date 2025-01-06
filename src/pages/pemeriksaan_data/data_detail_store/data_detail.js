@@ -39,19 +39,19 @@ export const datadetail_store = create((set) => ({
   fetchDataEntriData: async (id) => {
     try {
       const response = await axios.get(
-        `https://api-ecatalogue-staging.online/api/pengumpulan-data/get-entri-data/${id}`
+        `https://api-ecatalogue-staging.online/api/pemeriksaan-rekonsiliasi/get-data-pemeriksaan-rekonsiliasi/${id}`
       );
       const data = response.data.data;
 
       set((state) => ({
-        dataEntri: data,
-        material: data.material || [],
-        peralatan: data.peralatan || [],
-        tenaga_kerja: data.tenaga_kerja || [],
+        dataEntri: data.data,
+        material: data.data.material || [],
+        peralatan: data.data.peralatan || [],
+        tenaga_kerja: data.data.tenaga_kerja || [],
         initialValues: {
           ...state.initialValues,
-          data_vendor_id: data.data_vendor_id || "",
-          identifikasi_kebutuhan_id: data.identifikasi_kebutuhan_id || "",
+          data_vendor_id: data.data.data_vendor_id || "",
+          identifikasi_kebutuhan_id: data.data.identifikasi_kebutuhan_id || "",
         },
         data_vendor_id: data.data_vendor_id || "",
         identifikasi_kebutuhan_id: data.identifikasi_kebutuhan_id || "",

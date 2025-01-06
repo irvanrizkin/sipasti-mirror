@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 
-const entri_dataStore = create((set) => ({
+const entri_datastore = create((set) => ({
   selectedValue: 0,
   userOptions: [],
   pengawasUserOptions: [],
@@ -90,4 +90,4 @@ const entri_dataStore = create((set) => ({
   },
 }));
 
-export default entri_dataStore;
+export default entri_datastore;

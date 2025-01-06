@@ -31,6 +31,18 @@ function App() {
   const router = useRouter();
   const { id } = router.query;
 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const storedId = localStorage.getItem("shortlist_id");
+    if (storedId) {
+      fetchDataEntriData(storedId).then(() => {
+        console.log("Data yang diterima: ", data); // Log data yang diterima
+        setLoading(false);
+      });
+    }
+  }, [fetchDataEntriData]);
+
   const [alert, setAlert] = useState({
     message: "",
     severity: "",
@@ -39,14 +51,11 @@ function App() {
 
   useEffect(() => {
     const storedId = localStorage.getItem("shortlist_id");
-
-    console.log("Nilai shortlist_id dari localStorage:", storedId);
-
     if (storedId) {
-      console.log("shortlist_id yang dikirim:", storedId);
-      fetchDataEntriData(storedId);
-    } else {
-      console.log("shortlist_id belum tersedia di localStorage.");
+      fetchDataEntriData(storedId).then(() => {
+        console.log("Data yang diterima: ", data);
+        setLoading(false);
+      });
     }
   }, [fetchDataEntriData]);
 
@@ -68,9 +77,9 @@ function App() {
     updateStatus(id_pemeriksaan, status);
   };
 
-  const isSubmitDisabled = data.some(
-    (item) => item.status_pemeriksaan === null
-  );
+  const isSubmitDisabled =
+    Array.isArray(data) &&
+    data.some((item) => item.status_pemeriksaan === null);
 
   const handleSubmit = async (values) => {
     console.log("localStorage sebelum submit:", { ...localStorage });
@@ -187,7 +196,7 @@ function App() {
                       <th className="px-3 py-6 text-sm text-center w-[40px]">
                         No
                       </th>
-                      <th className="px-3 py-6 text-sm w-[180px]">
+                      <th className="px-3 py-6 text-sm w-full">
                         Kelengkapan Dokumen
                       </th>
                       <th className="px-3 py-6 text-sm text-center w-[150px] hidden">
@@ -199,78 +208,46 @@ function App() {
                       <th className="px-3 py-6 text-sm text-center w-[200px] hidden">
                         Verified By
                       </th>
-                      <th className="px-3 py-6 text-sm text-center w-[140px]">
+                      <th className="px-3 py-6 text-sm text-center w-[370px]">
                         Memenuhi
                       </th>
-                      <th className="px-3 py-6 text-sm text-center w-[140px]">
+                      <th className="px-3 py-6 text-sm text-center w-[370px]">
                         Tidak Memenuhi
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {data.map((item, index) => (
-                      <tr
-                        key={item.id_pemeriksaan}
-                        className={`${
-                          index % 2 === 0
-                            ? "bg-custom-neutral-0"
-                            : "bg-custom-neutral-100"
-                        }`}
-                      >
-                        <td className="px-3 py-4 text-sm text-center">
-                          {item.nomor}
+                    {loading ? (
+                      <tr>
+                        <td colSpan="6" className="text-center py-4">
+                          Loading data...
                         </td>
-                        <td className="px-3 py-4 text-sm">
-                          {item.kelengkapan_dokumen}
-                        </td>
-                        <td className="px-3 py-4 text-sm text-center hidden">
-                          {item.id_pemeriksaan}
-                        </td>
-                        <td className="px-3 py-4 text-sm hidden">
-                          {item.status_pemeriksaan || "Belum Dipilih"}
-                        </td>
-                        <td className="px-3 py-4 text-sm hidden">
-                          {item.verified_by}
-                        </td>
-
-                        {/* Tombol radio hanya muncul jika item.verified_by tidak null */}
-                        {item.id_pemeriksaan && item.verified_by !== null && (
-                          <>
-                            <td className="px-3 py-4 text-sm text-center">
-                              <input
-                                type="radio"
-                                id={`status-${item.id_pemeriksaan}-memenuhi`}
-                                name={`status-${item.id_pemeriksaan}`}
-                                value="memenuhi"
-                                checked={item.status_pemeriksaan === "memenuhi"}
-                                onChange={() =>
-                                  handleChange(item.id_pemeriksaan, "memenuhi")
-                                }
-                                className="mr-2"
-                              />
-                            </td>
-                            <td className="px-3 py-4 text-sm text-center">
-                              <input
-                                type="radio"
-                                id={`status-${item.id_pemeriksaan}-tidak_memenuhi`}
-                                name={`status-${item.id_pemeriksaan}`}
-                                value="tidak_memenuhi"
-                                checked={
-                                  item.status_pemeriksaan === "tidak_memenuhi"
-                                }
-                                onChange={() =>
-                                  handleChange(
-                                    item.id_pemeriksaan,
-                                    "tidak_memenuhi"
-                                  )
-                                }
-                                className="mr-2"
-                              />
-                            </td>
-                          </>
-                        )}
                       </tr>
-                    ))}
+                    ) : data && Array.isArray(data) && data.length > 0 ? (
+                      data.map((item, index) => (
+                        <tr
+                          key={item.id_pemeriksaan || index}
+                          className={`${
+                            index % 2 === 0
+                              ? "bg-custom-neutral-0"
+                              : "bg-custom-neutral-100"
+                          }`}>
+                          <td className="px-3 py-4 text-sm text-center">
+                            {item.nomor}
+                          </td>
+                          <td className="px-3 py-4 text-sm">
+                            {item.kelengkapan_dokumen}
+                          </td>
+                          {/* Rest of your table */}
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6" className="text-center py-4">
+                          Tidak ada data tersedia.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -302,8 +279,7 @@ function App() {
                 variant="solid_blue"
                 size="Medium"
                 type="submit"
-                disabled={isSubmitDisabled}
-              >
+                disabled={isSubmitDisabled}>
                 Simpan
               </Button>
             </div>
@@ -342,8 +318,7 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                 selectedValue === tabIndex
                   ? "bg-custom-blue-500 text-emphasis-on_color-high"
                   : "text-emphasis-on_surface-medium hover:bg-surface-light-overlay"
-              }`}
-            >
+              }`}>
               {item}
             </button>
           ))}
@@ -358,8 +333,9 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                   ? "bg-custom-blue-500 text-white"
                   : "bg-gray-200 text-gray-800"
               } px-4 py-2 rounded-lg`}
-              onClick={button.onClick || (() => console.log("Button clicked!"))}
-            >
+              onClick={
+                button.onClick || (() => console.log("Button clicked!"))
+              }>
               {button.label || "Button"}
             </button>
           )}
