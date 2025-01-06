@@ -12,6 +12,7 @@ import TextInput from "../components/input";
 import Button from "../components/button";
 import Modal from "../components/modal";
 import ForgotPassword from "./forgotpassword";
+import withAuth from "../middleware/withAuth";
 
 const Login = () => {
   const [username, setEmail] = useState("");
@@ -48,16 +49,45 @@ const Login = () => {
 
       const data = await response.json();
 
-      // Cek status dari API
       if (data.status !== "success") {
         throw new Error(data.message || "Login failed.");
       }
 
+      // Simpan token ke localStorage
       localStorage.setItem("token", data.token);
+
+      // Cek role pengguna
+      const roleResponse = await fetch(
+        "https://api-ecatalogue-staging.online/api/check-role",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${data.token}`,
+          },
+        }
+      );
+
+      const roleData = await roleResponse.json();
+
+      if (roleData.status !== "success") {
+        throw new Error("Gagal memeriksa role pengguna.");
+      }
+
+      // Simpan role ke localStorage atau state global
+      localStorage.setItem("role", roleData.role);
+
+      // Redirect berdasarkan role
+      if (roleData.role === "superadmin") {
+        router.push("/admin-dashboard");
+      } else if (roleData.role === "Tim Teknis Balai") {
+        router.push("/dashboard");
+      } else {
+        throw new Error("Role tidak dikenali.");
+      }
+
       setAlertMessage("Login berhasil!");
       setAlertSeverity("success");
       setAlertOpen(true);
-      router.push("/dashboard");
     } catch (error) {
       setAlertMessage(error.message);
       setAlertSeverity("error");
