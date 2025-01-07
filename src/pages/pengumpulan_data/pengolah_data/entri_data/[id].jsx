@@ -71,22 +71,22 @@ export default function EntriData() {
       });
       return false;
     }
-    if (!values.user_id_petugas_lapangan) {
-      setAlertInfo({
-        open: true,
-        severity: "error",
-        message: "Petugas lapangan wajib diisi!",
-      });
-      return false;
-    }
-    if (!values.user_id_pengawas) {
-      setAlertInfo({
-        open: true,
-        severity: "error",
-        message: "Pengawas wajib diisi!",
-      });
-      return false;
-    }
+    // if (!values.user_id_petugas_lapangan) {
+    //   setAlertInfo({
+    //     open: true,
+    //     severity: "error",
+    //     message: "Petugas lapangan wajib diisi!",
+    //   });
+    //   return false;
+    // }
+    // if (!values.user_id_pengawas) {
+    //   setAlertInfo({
+    //     open: true,
+    //     severity: "error",
+    //     message: "Pengawas wajib diisi!",
+    //   });
+    //   return false;
+    // }
     if (!values.nama_pemberi_informasi) {
       setAlertInfo({
         open: true,

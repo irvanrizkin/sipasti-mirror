@@ -80,7 +80,12 @@ const Navbar = () => {
       href: "/pemeriksaan_data/informasi_pemeriksaan_data",
       label: "Pemeriksaan",
       activePath: "/pemeriksaan_data",
-      roles: ["superadmin", "Pengolah Data", "Koordinator Provinsi"],
+      roles: [
+        "superadmin",
+        "Pengolah Data",
+        "Koordinator Provinsi",
+        "Tim Teknis Balai",
+      ],
     },
     {
       href: "",

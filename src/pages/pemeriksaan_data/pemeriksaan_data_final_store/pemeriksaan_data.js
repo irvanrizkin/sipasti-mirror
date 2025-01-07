@@ -5,6 +5,7 @@ import axios from "axios";
 
 export const pemeriksaan_dataStore = create((set) => ({
   selectedValue: 0,
+  data: [],
   userOptions: [],
   pengawasUserOptions: [],
   dataEntri: null,
@@ -111,62 +112,6 @@ export const pemeriksaan_dataStore = create((set) => ({
           id_pemeriksaan: "B2",
           status_pemeriksaan: null,
           verified_by: "pengawas",
-        },
-        {
-          nomor: "II",
-          kelengkapan_dokumen: "KRITERIA PEMERIKSAAN HASIL DATA",
-          id_pemeriksaan: "null",
-          verified_by: null,
-        },
-        {
-          nomor: "1",
-          kelengkapan_dokumen:
-            "Pemeriksaan satuan yang salah atau belum terisi.",
-          id_pemeriksaan: "C1",
-          status_pemeriksaan: null,
-          verified_by: "tim teknis",
-        },
-        {
-          nomor: "2",
-          kelengkapan_dokumen: "Penulisan nama kabupaten/kota.",
-          id_pemeriksaan: "C2",
-          status_pemeriksaan: null,
-          verified_by: "tim teknis",
-        },
-        {
-          nomor: "3",
-          kelengkapan_dokumen: "Nama responden/vendor yang tidak jelas.",
-          id_pemeriksaan: "C3",
-          status_pemeriksaan: null,
-          verified_by: "tim teknis",
-        },
-        {
-          nomor: "4",
-          kelengkapan_dokumen: "Konsistensi dalam pengisian kuesioner.",
-          id_pemeriksaan: "C4",
-          status_pemeriksaan: null,
-          verified_by: "tim teknis",
-        },
-        {
-          nomor: "III",
-          kelengkapan_dokumen: "PEMERIKSAAN ANOMALI HARGA",
-          id_pemeriksaan: "null2",
-          verified_by: null,
-        },
-        {
-          nomor: "1",
-          kelengkapan_dokumen: "Ketidakwajaran harga satuan pokok.",
-          id_pemeriksaan: "D1",
-          status_pemeriksaan: null,
-          verified_by: "tim teknis",
-        },
-        {
-          nomor: "2",
-          kelengkapan_dokumen:
-            "Keterbandingan antar harga satuan pokok di wilayah yang berdekatan.",
-          id_pemeriksaan: "D2",
-          status_pemeriksaan: null,
-          verified_by: "tim teknis",
         },
       ];
 

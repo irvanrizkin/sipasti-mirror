@@ -52,7 +52,7 @@ const survei_kuesionerStore = create((set) => ({
   fetchUserOptions: async () => {
     try {
       const response = await axios.get(
-        "http://api-ecatalogue-staging.online/api/pengumpulan-data/list-user"
+        "http://api-ecatalogue-staging.online/api/pengumpulan-data/list-user?role=Petugas Lapangan"
       );
       const options =
         response.data?.data.map((user) => ({
@@ -71,7 +71,7 @@ const survei_kuesionerStore = create((set) => ({
   fetchPengawasUserOptions: async () => {
     try {
       const response = await axios.get(
-        "https://api-ecatalogue-staging.online/api/pengumpulan-data/list-pengawas"
+        "http://api-ecatalogue-staging.online/api/pengumpulan-data/list-user?role=Pengawas"
       );
       const options =
         response.data?.data.map((user) => ({

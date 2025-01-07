@@ -78,22 +78,22 @@ export default function survei_kuesioner() {
       });
       return false;
     }
-    if (!values.user_id_petugas_lapangan) {
-      setAlertInfo({
-        open: true,
-        severity: "error",
-        message: "Petugas lapangan wajib diisi!",
-      });
-      return false;
-    }
-    if (!values.user_id_pengawas) {
-      setAlertInfo({
-        open: true,
-        severity: "error",
-        message: "Pengawas wajib diisi!",
-      });
-      return false;
-    }
+    // if (!values.user_id_petugas_lapangan) {
+    //   setAlertInfo({
+    //     open: true,
+    //     severity: "error",
+    //     message: "Petugas lapangan wajib diisi!",
+    //   });
+    //   return false;
+    // }
+    // if (!values.user_id_pengawas) {
+    //   setAlertInfo({
+    //     open: true,
+    //     severity: "error",
+    //     message: "Pengawas wajib diisi!",
+    //   });
+    //   return false;
+    // }
     if (!values.nama_pemberi_informasi) {
       setAlertInfo({
         open: true,
@@ -120,8 +120,10 @@ export default function survei_kuesioner() {
     try {
       const payload = {
         type_save: currentAction === "draft" ? "draft" : "final",
-        user_id_petugas_lapangan: values.user_id_petugas_lapangan,
-        user_id_pengawas: values.user_id_pengawas,
+        // user_id_petugas_lapangan: values.user_id_petugas_lapangan,
+        // user_id_pengawas: values.user_id_pengawas,
+        user_id_pengawas: 1,
+        user_id_petugas_lapangan: 1,
         nama_pemberi_informasi: values.nama_pemberi_informasi,
         identifikasi_kebutuhan_id,
         tanggal_survei: values.tanggal_survei,
@@ -846,19 +848,16 @@ export default function survei_kuesioner() {
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
-                                  onChange={(e) =>
+                                  onChange={(e) => {
                                     form.setFieldValue(
                                       `peralatan.${index}.satuan_setempat`,
                                       e.target.value
-                                    )
-                                  }
-                                  placeholder="Satuan Setempat"
-                                  className="input-field"
-                                  isRequired={true}
-                                  errorMessage={
-                                    form.errors?.peralatan?.[index]
-                                      ?.satuan_setempat
-                                  }
+                                    );
+                                    form.setFieldValue(
+                                      `peralatan.${index}.id`,
+                                      item.id
+                                    );
+                                  }}
                                 />
                               )}
                             </Field>

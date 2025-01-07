@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Field, FieldArray, Form, Formik } from "formik";
 import Navbar from "../../../components/navigationbar";
 import Button from "../../../components/button";
-import { pemeriksaan_dataStore } from "../pemeriksaan_data_final_store/pemeriksaan_data";
+import { pemeriksaan_dataStore } from "../test_store/test";
 import { submitDataVerifikasiValidasi } from "../../../services/api";
 import FileInput from "../../../components/FileInput";
 
@@ -16,12 +16,14 @@ import "dayjs/locale/id";
 dayjs.locale("id");
 
 function App() {
+  const formattedDate = dayjs().format("YYYY-MM-DD HH:mm:ss");
   const [berita_acara, setBerita_Acara] = useState(null);
   const [selectedberitaacara, setselectedBeritaAcara] = useState(null);
   const [error, setError] = useState("");
   const [progress, setProgress] = useState(0);
   const {
     data_vendor_id,
+    dataAPI,
     identifikasi_kebutuhan_id,
     data,
     updateStatus,
@@ -31,33 +33,32 @@ function App() {
   const router = useRouter();
   const { id } = router.query;
 
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const storedId = localStorage.getItem("shortlist_id");
-    if (storedId) {
-      fetchDataEntriData(storedId).then(() => {
-        console.log("Data yang diterima setelah fetch:", data);
-        setLoading(false);
-      });
-    }
-  }, [fetchDataEntriData, data]);
-
   const [alert, setAlert] = useState({
     message: "",
     severity: "",
     open: false,
   });
 
+  // useEffect(() => {
+  //   fetchDataEntriData(136);
+  // }, [fetchDataEntriData]);
+
+  const shortlist_id =
+    typeof window !== "undefined" ? localStorage.getItem("shortlist_id") : null;
+
   useEffect(() => {
-    const storedId = localStorage.getItem("shortlist_id");
-    if (storedId) {
-      fetchDataEntriData(storedId).then(() => {
-        console.log("Data yang diterima: ", data);
-        setLoading(false);
-      });
+    if (shortlist_id) {
+      console.log("shortlist_id yang dikirim:", shortlist_id);
+      fetchDataEntriData(shortlist_id); // Use the shortlist_id from localStorage
     }
-  }, [fetchDataEntriData]);
+  }, [shortlist_id]);
+
+  useEffect(() => {
+    console.log("Fetched Data from Store:", data);
+  }, [data]);
+
+  //   fetchData();
+  // }, [setData]);
 
   const handleCancelBeritaAcara = () => {
     console.log("Cancelling file upload...");
@@ -77,13 +78,11 @@ function App() {
     updateStatus(id_pemeriksaan, status);
   };
 
-  const isSubmitDisabled =
-    Array.isArray(data) &&
-    data.some((item) => item.status_pemeriksaan === null);
+  const isSubmitDisabled = data.some(
+    (item) => item.status_pemeriksaan === null
+  );
 
   const handleSubmit = async (values) => {
-    console.log("localStorage sebelum submit:", { ...localStorage });
-
     try {
       const verifikasiValidasi = data
         .filter((item) => item.verified_by !== null)
@@ -93,7 +92,10 @@ function App() {
           verified_by: item.verified_by || "tim teknis",
         }));
 
+      // Membuat objek FormData
       const payload = new FormData();
+      // const formattedDate = dayjs().format("YYYY-MM-DD HH:mm:ss");
+      // payload.append("date_field", formattedDate);
       payload.append("identifikasi_kebutuhan_id", identifikasi_kebutuhan_id);
       payload.append("data_vendor_id", data_vendor_id);
 
@@ -144,9 +146,6 @@ function App() {
         severity: "error",
         open: true,
       });
-    } finally {
-      localStorage.removeItem("shortlist_id");
-      console.log("localStorage setelah submit:", { ...localStorage });
     }
   };
 
@@ -196,7 +195,7 @@ function App() {
                       <th className="px-3 py-6 text-sm text-center w-[40px]">
                         No
                       </th>
-                      <th className="px-3 py-6 text-sm w-full">
+                      <th className="px-3 py-6 text-sm w-[180px]">
                         Kelengkapan Dokumen
                       </th>
                       <th className="px-3 py-6 text-sm text-center w-[150px] hidden">
@@ -208,46 +207,173 @@ function App() {
                       <th className="px-3 py-6 text-sm text-center w-[200px] hidden">
                         Verified By
                       </th>
-                      <th className="px-3 py-6 text-sm text-center w-[370px]">
+                      <th className="px-3 py-6 text-sm text-center w-[140px]">
                         Memenuhi
                       </th>
-                      <th className="px-3 py-6 text-sm text-center w-[370px]">
+                      <th className="px-3 py-6 text-sm text-center w-[140px]">
                         Tidak Memenuhi
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {loading ? (
-                      <tr>
-                        <td colSpan="6" className="text-center py-4">
-                          Loading data...
+                    {dataAPI.map((item, index) => (
+                      <tr
+                        key={item.id_pemeriksaan}
+                        className={`${
+                          index % 2 === 0
+                            ? "bg-custom-neutral-0"
+                            : "bg-custom-neutral-100"
+                        }`}>
+                        <td className="px-3 py-4 text-sm text-center">
+                          {item.nomor}
                         </td>
-                      </tr>
-                    ) : data && Array.isArray(data) && data.length > 0 ? (
-                      data.map((item, index) => (
-                        <tr
-                          key={item.id_pemeriksaan || index}
-                          className={`${
-                            index % 2 === 0
-                              ? "bg-custom-neutral-0"
-                              : "bg-custom-neutral-100"
-                          }`}>
-                          <td className="px-3 py-4 text-sm text-center">
-                            {item.nomor}
-                          </td>
-                          <td className="px-3 py-4 text-sm">
-                            {item.kelengkapan_dokumen}
-                          </td>
-                          {/* Rest of your table */}
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="6" className="text-center py-4">
-                          Tidak ada data tersedia.
+                        <td className="px-3 py-4 text-sm">
+                          {item.kelengkapan_dokumen}
                         </td>
+                        <td className="px-3 py-4 text-sm text-center hidden">
+                          {item.id_pemeriksaan}
+                        </td>
+                        <td className="px-3 py-4 text-sm hidden">
+                          {item.status_pemeriksaan || "Belum Dipilih"}
+                        </td>
+                        <td className="px-3 py-4 text-sm hidden">
+                          {item.verified_by}
+                        </td>
+
+                        {/* Tombol radio hanya muncul jika item.verified_by tidak null */}
+                        {item.id_pemeriksaan && item.verified_by !== null && (
+                          <>
+                            <td className="px-3 py-4 text-sm text-center">
+                              <input
+                                type="radio"
+                                id={`status-${item.id_pemeriksaan}-memenuhi`}
+                                name={`status-${item.id_pemeriksaan}`}
+                                value="memenuhi"
+                                checked={item.status_pemeriksaan === "memenuhi"}
+                                onChange={() =>
+                                  handleChange(item.id_pemeriksaan, "memenuhi")
+                                }
+                                className="mr-2"
+                              />
+                            </td>
+                            <td className="px-3 py-4 text-sm text-center">
+                              <input
+                                type="radio"
+                                id={`status-${item.id_pemeriksaan}-tidak memenuhi`}
+                                name={`status-${item.id_pemeriksaan}`}
+                                value="tidak memenuhi"
+                                checked={
+                                  item.status_pemeriksaan === "tidak memenuhi"
+                                }
+                                onChange={() =>
+                                  handleChange(
+                                    item.id_pemeriksaan,
+                                    "tidak memenuhi"
+                                  )
+                                }
+                                className="mr-2"
+                              />
+                            </td>
+                          </>
+                        )}
                       </tr>
-                    )}
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="rounded-[16px] border border-gray-200 overflow-hidden mt-4">
+              <div className="overflow-x-auto">
+                <table className="table-fixed w-full">
+                  <thead>
+                    <tr className="bg-custom-blue-100 text-left text-emphasis-on_surface-high uppercase tracking-wider">
+                      <th className="px-3 py-6 text-sm text-center w-[40px]">
+                        No
+                      </th>
+                      <th className="px-3 py-6 text-sm w-[180px]">
+                        Kelengkapan Dokumen
+                      </th>
+                      <th className="px-3 py-6 text-sm text-center w-[150px] hidden">
+                        ID Pemeriksaan
+                      </th>
+                      <th className="px-3 py-6 text-sm text-center w-[200px] hidden">
+                        Status Pemeriksaan
+                      </th>
+                      <th className="px-3 py-6 text-sm text-center w-[200px] hidden">
+                        Verified By
+                      </th>
+                      <th className="px-3 py-6 text-sm text-center w-[140px]">
+                        Memenuhi
+                      </th>
+                      <th className="px-3 py-6 text-sm text-center w-[140px]">
+                        Tidak Memenuhi
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.map((item, index) => (
+                      <tr
+                        key={item.id_pemeriksaan}
+                        className={`${
+                          index % 2 === 0
+                            ? "bg-custom-neutral-0"
+                            : "bg-custom-neutral-100"
+                        }`}>
+                        <td className="px-3 py-4 text-sm text-center">
+                          {item.nomor}
+                        </td>
+                        <td className="px-3 py-4 text-sm">
+                          {item.kelengkapan_dokumen}
+                        </td>
+                        <td className="px-3 py-4 text-sm text-center hidden">
+                          {item.id_pemeriksaan}
+                        </td>
+                        <td className="px-3 py-4 text-sm hidden">
+                          {item.status_pemeriksaan || "Belum Dipilih"}
+                        </td>
+                        <td className="px-3 py-4 text-sm hidden">
+                          {item.verified_by}
+                        </td>
+
+                        {/* Tombol radio hanya muncul jika item.verified_by tidak null */}
+                        {item.id_pemeriksaan && item.verified_by !== null && (
+                          <>
+                            <td className="px-3 py-4 text-sm text-center">
+                              <input
+                                type="radio"
+                                id={`status-${item.id_pemeriksaan}-memenuhi`}
+                                name={`status-${item.id_pemeriksaan}`}
+                                value="memenuhi"
+                                checked={item.status_pemeriksaan === "memenuhi"}
+                                onChange={() =>
+                                  handleChange(item.id_pemeriksaan, "memenuhi")
+                                }
+                                className="mr-2"
+                              />
+                            </td>
+                            <td className="px-3 py-4 text-sm text-center">
+                              <input
+                                type="radio"
+                                id={`status-${item.id_pemeriksaan}-tidak memenuhi`}
+                                name={`status-${item.id_pemeriksaan}`}
+                                value="tidak memenuhi"
+                                checked={
+                                  item.status_pemeriksaan === "tidak memenuhi"
+                                }
+                                onChange={() =>
+                                  handleChange(
+                                    item.id_pemeriksaan,
+                                    "tidak memenuhi"
+                                  )
+                                }
+                                className="mr-2"
+                              />
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

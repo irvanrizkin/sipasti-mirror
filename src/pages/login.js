@@ -94,6 +94,8 @@ const Login = () => {
         router.push("/dashboard");
       } else if (roleData.data === "Pengawas") {
         router.push("/dashboard");
+      } else if (roleData.data === "Direktorat") {
+        router.push("/dashboard");
       } else {
         throw new Error("Role tidak dikenali.");
       }
