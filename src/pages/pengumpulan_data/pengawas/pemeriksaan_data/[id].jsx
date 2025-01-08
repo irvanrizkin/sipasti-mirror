@@ -291,8 +291,7 @@ function App() {
                 disabledActive={true}
               />
               <div
-                style={{ display: "flex", alignItems: "center", gap: "256px" }}
-              >
+                style={{ display: "flex", alignItems: "center", gap: "256px" }}>
                 <div className="text-B2" style={{ minWidth: "200px" }}>
                   Tanggal Survei
                 </div>
@@ -341,8 +340,7 @@ function App() {
                 disabledActive={true}
               />
               <div
-                style={{ display: "flex", alignItems: "center", gap: "256px" }}
-              >
+                style={{ display: "flex", alignItems: "center", gap: "256px" }}>
                 <div className="text-B2" style={{ minWidth: "200px" }}>
                   Tanggal Pengawasan
                 </div>
@@ -562,8 +560,7 @@ function App() {
                               index % 2 === 0
                                 ? "bg-custom-neutral-0"
                                 : "bg-custom-neutral-100"
-                            }`}
-                          >
+                            }`}>
                             <td className="px-3 py-6 text-sm text-center">
                               {(currentPage - 1) * itemsPerPage + index + 1}
                             </td>
@@ -620,8 +617,7 @@ function App() {
                         <tr>
                           <td
                             className="px-3 py-6 text-B1 text-center text-emphasis-on_surface-medium"
-                            colSpan="20"
-                          >
+                            colSpan="20">
                             Tidak ada data tersedia
                           </td>
                         </tr>
@@ -731,8 +727,7 @@ function App() {
                               index % 2 === 0
                                 ? "bg-custom-neutral-0"
                                 : "bg-custom-neutral-100"
-                            }`}
-                          >
+                            }`}>
                             <td className="px-3 py-6 text-sm text-center">
                               {(currentPage - 1) * itemsPerPage + index + 1}
                             </td>
@@ -779,8 +774,7 @@ function App() {
                         <tr>
                           <td
                             className="px-3 py-6 text-B1 text-center text-emphasis-on_surface-medium"
-                            colSpan="16"
-                          >
+                            colSpan="16">
                             Tidak ada data tersedia
                           </td>
                         </tr>
@@ -872,8 +866,7 @@ function App() {
                               index % 2 === 0
                                 ? "bg-custom-neutral-0"
                                 : "bg-custom-neutral-100"
-                            }`}
-                          >
+                            }`}>
                             <td className="px-3 py-6 text-sm text-center">
                               {(currentPage - 1) * itemsPerPage + index + 1}
                             </td>
@@ -906,8 +899,7 @@ function App() {
                         <tr>
                           <td
                             className="px-3 py-6 text-B1 text-center text-emphasis-on_surface-medium"
-                            colSpan="10"
-                          >
+                            colSpan="10">
                             Tidak ada data tersedia
                           </td>
                         </tr>
@@ -1014,8 +1006,7 @@ function App() {
                           index % 2 === 0
                             ? "bg-custom-neutral-0"
                             : "bg-custom-neutral-100"
-                        }`}
-                      >
+                        }`}>
                         <td className="px-3 py-4 text-sm text-center">
                           {item.nomor}
                         </td>
@@ -1101,8 +1092,7 @@ function App() {
                 variant="solid_blue"
                 size="Medium"
                 type="submit"
-                disabled={isSubmitDisabled}
-              >
+                disabled={isSubmitDisabled}>
                 Simpan
               </Button>
             </div>
@@ -1141,8 +1131,7 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                 selectedValue === tabIndex
                   ? "bg-custom-blue-500 text-emphasis-on_color-high"
                   : "text-emphasis-on_surface-medium hover:bg-surface-light-overlay"
-              }`}
-            >
+              }`}>
               {item}
             </button>
           ))}
@@ -1157,8 +1146,9 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                   ? "bg-custom-blue-500 text-white"
                   : "bg-gray-200 text-gray-800"
               } px-4 py-2 rounded-lg`}
-              onClick={button.onClick || (() => console.log("Button clicked!"))}
-            >
+              onClick={
+                button.onClick || (() => console.log("Button clicked!"))
+              }>
               {button.label || "Button"}
             </button>
           )}

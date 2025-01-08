@@ -14,7 +14,10 @@ const Checkbox = ({ label, checked: initialChecked = false, onChange }) => {
   return (
     <div className="flex items-center justify-left space-x-2 h-full">
       {" "}
-      <button onClick={handleCheckboxChange} className="flex items-center">
+      <button
+        onClick={handleCheckboxChange}
+        type="button"
+        className="flex items-center">
         <img
           src={checked ? "/images/checked.svg" : "/images/unchecked.svg"}
           alt={checked ? "Checked" : "Unchecked"}
