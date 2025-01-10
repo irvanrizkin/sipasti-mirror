@@ -3,6 +3,10 @@ import axios from "axios";
 
 const usePenugasanTimStore = create((set) => ({
   userOptions: [],
+  UserTimTeknisOptions: [],
+  UserPengawasOptions: [],
+  UserPetugasLapangan: [],
+  UserPengolahData: [],
   suratPenugasanPengawas: null,
   skPenugasanPengawas: null,
   suratPenugasanPetugasLapangan: null,
@@ -43,7 +47,85 @@ const usePenugasanTimStore = create((set) => ({
       );
     }
   },
+  fetchUserTimTeknisOptions: async () => {
+    try {
+      const response = await axios.get(
+        "https://api-ecatalogue-staging.online/api/pengumpulan-data/list-user?role=Tim%20Teknis%20Balai"
+      );
+      const options =
+        response.data?.data.map((user) => ({
+          value: user.user_id,
+          label: user.nama_lengkap,
+        })) || [];
+      set({ UserTimTeknisOptions: options });
+      console.log("User options berhasil diambil:", options);
+    } catch (error) {
+      console.error(
+        "Error fetching user options:",
+        error.response?.data || error.message
+      );
+    }
+  },
+  fetchUserPengawasOptions: async () => {
+    try {
+      const response = await axios.get(
+        "https://api-ecatalogue-staging.online/api/pengumpulan-data/list-user?role=Pengawas"
+      );
+      const options =
+        response.data?.data.map((user) => ({
+          value: user.user_id,
+          label: user.nama_lengkap,
+        })) || [];
+      set({ UserPengawasOptions: options });
+      console.log("User options berhasil diambil:", options);
+    } catch (error) {
+      console.error(
+        "Error fetching user options:",
+        error.response?.data || error.message
+      );
+    }
+  },
 
+  fetchUserPetugasLapangan: async () => {
+    try {
+      const response = await axios.get(
+        "https://api-ecatalogue-staging.online/api/pengumpulan-data/list-user?role=Petugas%20Lapangan"
+      );
+      const options =
+        response.data?.data.map((user) => ({
+          value: user.user_id,
+          label: user.nama_lengkap,
+        })) || [];
+      set({ UserPetugasLapangan: options });
+      console.log("User options berhasil diambil:", options);
+    } catch (error) {
+      console.error(
+        "Error fetching user options:",
+        error.response?.data || error.message
+      );
+    }
+  },
+
+  fetchUserPengolahData: async () => {
+    try {
+      const response = await axios.get(
+        "https://api-ecatalogue-staging.online/api/pengumpulan-data/list-user?role=Pengolah%20Data"
+      );
+      const options =
+        response.data?.data.map((user) => ({
+          value: user.user_id,
+          label: user.nama_lengkap,
+        })) || [];
+      set({ UserPengolahData: options });
+      console.log("User options berhasil diambil:", options);
+    } catch (error) {
+      console.error(
+        "Error fetching user options:",
+        error.response?.data || error.message
+      );
+    }
+  },
+  
   saveTimTeknisBalaiData: async (
     nama_tim,
     ketua,

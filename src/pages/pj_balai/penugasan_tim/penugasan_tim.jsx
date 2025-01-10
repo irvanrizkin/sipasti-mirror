@@ -14,6 +14,13 @@ import CustomAlert from "../../../components/alert";
 
 export default function PenugasanTim() {
   const { userOptions, fetchUserOptions } = usePenugasanTimStore();
+  const { UserTimTeknisOptions, fetchUserTimTeknisOptions } =
+    usePenugasanTimStore();
+  const { UserPengawasOptions, fetchUserPengawasOptions } =
+    usePenugasanTimStore();
+  const { UserPetugasLapangan, fetchUserPetugasLapangan } =
+    usePenugasanTimStore();
+  const { UserPengolahData, fetchUserPengolahData } = usePenugasanTimStore();
   const [skPenugasantimTeknisBalai, setSkPenugasantimTeknisBalai] =
     useState(null);
   const [skPenugasanPengawas, setSkPenugasanPengawas] = useState(null);
@@ -218,6 +225,22 @@ export default function PenugasanTim() {
     fetchUserOptions();
   }, [fetchUserOptions]);
 
+  useEffect(() => {
+    fetchUserTimTeknisOptions();
+  }, [fetchUserTimTeknisOptions]);
+
+  useEffect(() => {
+    fetchUserPengawasOptions();
+  }, [fetchUserPengawasOptions]);
+
+  useEffect(() => {
+    fetchUserPetugasLapangan();
+  }, [fetchUserPetugasLapangan]);
+
+  useEffect(() => {
+    fetchUserPengolahData();
+  }, [fetchUserPengolahData]);
+
   console.log("sknya", skPenugasanPengawas);
   const tabs = [
     {
@@ -264,7 +287,7 @@ export default function PenugasanTim() {
                         setFieldValue("nama_tim", e.target.value)
                       }
                     />
-                    <div className="px-[236px]">
+                    <div className="px-[456px]">
                       <Button
                         variant="disabled"
                         size="Medium"
@@ -279,7 +302,7 @@ export default function PenugasanTim() {
                       placeholder="Pilih Ketua"
                       size="Medium"
                       isRequired={true}
-                      options={userOptions}
+                      options={UserTimTeknisOptions}
                       value={values.ketua}
                       onSelect={(selectedOption) =>
                         setFieldValue("ketua", selectedOption.value)
@@ -292,7 +315,7 @@ export default function PenugasanTim() {
                       placeholder="Pilih Sekretaris"
                       size="Medium"
                       isRequired={true}
-                      options={userOptions}
+                      options={UserTimTeknisOptions}
                       value={values.sekretaris}
                       onSelect={(selectedOption) =>
                         setFieldValue("sekretaris", selectedOption.value)
@@ -315,7 +338,7 @@ export default function PenugasanTim() {
                                 labelPosition="left"
                                 placeholder="Pilih nama anggota"
                                 isRequired={true}
-                                options={userOptions}
+                                options={UserTimTeknisOptions}
                                 value={values.anggota[index]}
                                 onSelect={(selectedOption) =>
                                   setFieldValue(
@@ -444,7 +467,7 @@ export default function PenugasanTim() {
                             labelPosition="left"
                             placeholder="Masukkan Pengawas"
                             isRequired={true}
-                            options={userOptions}
+                            options={UserPengawasOptions}
                             onSelect={(selectedOption) =>
                               setFieldValue(
                                 `pengawas.${index}`,
@@ -563,7 +586,7 @@ export default function PenugasanTim() {
                             labelPosition="left"
                             placeholder="Masukkan Petugas Lapangan"
                             isRequired={true}
-                            options={userOptions}
+                            options={UserPetugasLapangan}
                             onSelect={(selectedOption) =>
                               setFieldValue(
                                 `petugasLapangan.${index}`,
@@ -682,7 +705,7 @@ export default function PenugasanTim() {
                             labelPosition="left"
                             placeholder="Masukkan nama pengolah data"
                             isRequired={true}
-                            options={userOptions}
+                            options={UserPengolahData}
                             onSelect={(selectedOption) =>
                               setFieldValue(
                                 `pengolahData.${index}`,

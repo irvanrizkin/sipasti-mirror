@@ -82,7 +82,6 @@ const Navbar = () => {
       activePath: "/pemeriksaan_data",
       roles: [
         "superadmin",
-        "Pengolah Data",
         "Koordinator Provinsi",
         "Tim Teknis Balai",
       ],

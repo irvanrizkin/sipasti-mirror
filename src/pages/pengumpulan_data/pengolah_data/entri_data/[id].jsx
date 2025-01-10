@@ -4,7 +4,7 @@ import { useStore } from "zustand";
 import Navbar from "../../../../components/navigationbar";
 import CustomAlert from "../../../../components/alert";
 import TextInput from "../../../../components/input";
-import entri_datastore from "../entri_data_store/entri_data";
+import entri_dataStore from "../entri_data_store/entri_data";
 import informasi_tahap_pengumpulanStore from "../../pengawas/informasi_tahap_pengumpulan/informasi_tahap_pengumpulan";
 import SearchBox from "../../../../components/searchbox";
 import Button from "../../../../components/button";
@@ -39,7 +39,7 @@ export default function EntriData() {
     setSelectedValue,
     data_vendor_id,
     identifikasi_kebutuhan_id,
-  } = useStore(entri_datastore);
+  } = useStore(entri_dataStore);
 
   const router = useRouter();
   const { id } = router.query;
@@ -71,22 +71,22 @@ export default function EntriData() {
       });
       return false;
     }
-    // if (!values.user_id_petugas_lapangan) {
-    //   setAlertInfo({
-    //     open: true,
-    //     severity: "error",
-    //     message: "Petugas lapangan wajib diisi!",
-    //   });
-    //   return false;
-    // }
-    // if (!values.user_id_pengawas) {
-    //   setAlertInfo({
-    //     open: true,
-    //     severity: "error",
-    //     message: "Pengawas wajib diisi!",
-    //   });
-    //   return false;
-    // }
+    if (!values.user_id_petugas_lapangan) {
+      setAlertInfo({
+        open: true,
+        severity: "error",
+        message: "Petugas lapangan wajib diisi!",
+      });
+      return false;
+    }
+    if (!values.user_id_pengawas) {
+      setAlertInfo({
+        open: true,
+        severity: "error",
+        message: "Pengawas wajib diisi!",
+      });
+      return false;
+    }
     if (!values.nama_pemberi_informasi) {
       setAlertInfo({
         open: true,
@@ -270,7 +270,8 @@ export default function EntriData() {
                 display: "flex",
                 alignItems: "center",
                 gap: "256px",
-              }}>
+              }}
+            >
               <div className="text-B2" style={{ minWidth: "200px" }}>
                 Tanggal Survei
               </div>
@@ -328,7 +329,8 @@ export default function EntriData() {
                 display: "flex",
                 alignItems: "center",
                 gap: "256px",
-              }}>
+              }}
+            >
               <div className="text-B2" style={{ minWidth: "200px" }}>
                 Tanggal Pengawasan
               </div>
@@ -472,7 +474,8 @@ export default function EntriData() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}>
+                          }`}
+                        >
                           <td className="px-3 py-6 text-sm text-center">
                             {(currentPage - 1) * itemsPerPage + index + 1}
                           </td>
@@ -528,7 +531,8 @@ export default function EntriData() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.satuan_setempat_panjang`}>
+                              name={`material.${index}.satuan_setempat_panjang`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -551,7 +555,8 @@ export default function EntriData() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.satuan_setempat_lebar`}>
+                              name={`material.${index}.satuan_setempat_lebar`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -574,7 +579,8 @@ export default function EntriData() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.satuan_setempat_tinggi`}>
+                              name={`material.${index}.satuan_setempat_tinggi`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -597,7 +603,8 @@ export default function EntriData() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.konversi_satuan_setempat`}>
+                              name={`material.${index}.konversi_satuan_setempat`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -620,7 +627,8 @@ export default function EntriData() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.harga_satuan_setempat`}>
+                              name={`material.${index}.harga_satuan_setempat`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -643,7 +651,8 @@ export default function EntriData() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.harga_konversi_satuan_setempat`}>
+                              name={`material.${index}.harga_konversi_satuan_setempat`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -812,7 +821,8 @@ export default function EntriData() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}>
+                          }`}
+                        >
                           <td className="px-3 py-6 text-sm text-center">
                             {(currentPage - 1) * itemsPerPage + index + 1}
                           </td>
@@ -866,7 +876,8 @@ export default function EntriData() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`peralatan.${index}.harga_sewa_satuan_setempat`}>
+                              name={`peralatan.${index}.harga_sewa_satuan_setempat`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -889,7 +900,8 @@ export default function EntriData() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`peralatan.${index}.harga_sewa_konversi`}>
+                              name={`peralatan.${index}.harga_sewa_konversi`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -1039,7 +1051,8 @@ export default function EntriData() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}>
+                          }`}
+                        >
                           <td className="px-3 py-6 text-sm text-center">
                             {(currentPage - 1) * itemsPerPage + index + 1}
                           </td>
@@ -1061,7 +1074,8 @@ export default function EntriData() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`tenaga_kerja.${index}.harga_per_satuan_setempat`}>
+                              name={`tenaga_kerja.${index}.harga_per_satuan_setempat`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -1084,7 +1098,8 @@ export default function EntriData() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`tenagarkerjas.${index}.harga_konversi_perjam`}>
+                              name={`tenagarkerjas.${index}.harga_konversi_perjam`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -1282,7 +1297,8 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                 selectedValue === tabIndex
                   ? "bg-custom-blue-500 text-emphasis-on_color-high"
                   : "text-emphasis-on_surface-medium hover:bg-surface-light-overlay"
-              }`}>
+              }`}
+            >
               {item}
             </button>
           ))}
@@ -1297,9 +1313,8 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                   ? "bg-custom-blue-500 text-white"
                   : "bg-gray-200 text-gray-800"
               } px-4 py-2 rounded-lg`}
-              onClick={
-                button.onClick || (() => console.log("Button clicked!"))
-              }>
+              onClick={button.onClick || (() => console.log("Button clicked!"))}
+            >
               {button.label || "Button"}
             </button>
           )}

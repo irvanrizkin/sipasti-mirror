@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Field, FieldArray, Form, Formik } from "formik";
 import Navbar from "../../../components/navigationbar";
 import Button from "../../../components/button";
-import { pemeriksaan_dataStore } from "../pemeriksaan_data_final_store/pemeriksaan_data";
+import { pemeriksaan_dataStore } from "../pemeriksaan_data_final_store/pemeriksaan_data.js";
 import { submitDataVerifikasiValidasi } from "../../../services/api";
 import FileInput from "../../../components/FileInput";
 
@@ -16,32 +16,28 @@ import "dayjs/locale/id";
 dayjs.locale("id");
 
 function App() {
+  const formattedDate = dayjs().format("YYYY-MM-DD HH:mm:ss");
   const [berita_acara, setBerita_Acara] = useState(null);
   const [selectedberitaacara, setselectedBeritaAcara] = useState(null);
   const [error, setError] = useState("");
+  const { pemeriksaanData } = useStore(pemeriksaan_dataStore);
   const [progress, setProgress] = useState(0);
   const {
+    fetchPemeriksaanData,
     data_vendor_id,
+    dataStatic,
+    dataAPI,
     identifikasi_kebutuhan_id,
     data,
     updateStatus,
-    fetchDataEntriData,
   } = useStore(pemeriksaan_dataStore);
+
+  useEffect(() => {
+    fetchPemeriksaanData();
+  }, [fetchPemeriksaanData]);
 
   const router = useRouter();
   const { id } = router.query;
-
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const storedId = localStorage.getItem("shortlist_id");
-    if (storedId) {
-      fetchDataEntriData(storedId).then(() => {
-        console.log("Data yang diterima setelah fetch:", data);
-        setLoading(false);
-      });
-    }
-  }, [fetchDataEntriData, data]);
 
   const [alert, setAlert] = useState({
     message: "",
@@ -50,14 +46,21 @@ function App() {
   });
 
   useEffect(() => {
-    const storedId = localStorage.getItem("shortlist_id");
-    if (storedId) {
-      fetchDataEntriData(storedId).then(() => {
-        console.log("Data yang diterima: ", data);
-        setLoading(false);
-      });
+    const id = localStorage.getItem("shortlist_id");
+
+    console.log("ID yang digunakan:", id);
+
+    if (id) {
+      console.log("Fetching data with ID:", id);
+      fetchPemeriksaanData(id);
+    } else {
+      console.warn("shortlist_id not found in localStorage.");
     }
-  }, [fetchDataEntriData]);
+  }, [fetchPemeriksaanData]);
+
+  useEffect(() => {
+    console.log("Fetched Data from Store:", data);
+  }, [data]);
 
   const handleCancelBeritaAcara = () => {
     console.log("Cancelling file upload...");
@@ -77,13 +80,32 @@ function App() {
     updateStatus(id_pemeriksaan, status);
   };
 
-  const isSubmitDisabled =
-    Array.isArray(data) &&
-    data.some((item) => item.status_pemeriksaan === null);
+  const isSubmitDisabled = data.some(
+    (item) => item.status_pemeriksaan === null
+  );
+
+  const filteredData = pemeriksaanData.filter((item) =>
+    ["A1", "A2", "A3", "A4", "A5", "B1", "B2"].includes(item.item_number)
+  );
+
+  const combinedData = dataStatic.map((item) => {
+    const apiData =
+      filteredData.find(
+        (filteredItem) => filteredItem.item_number === item.item_number
+      ) || {};
+
+    return {
+      nomor: item.nomor,
+      kelengkapan_dokumen: item.kelengkapan_dokumen,
+      status_pemeriksaan: apiData.status_pemeriksaan || null,
+      verified_by: apiData.verified_by || null,
+      showRadio: ["A1", "A2", "A3", "A4", "A5", "B1", "B2"].includes(
+        item.item_number
+      ),
+    };
+  });
 
   const handleSubmit = async (values) => {
-    console.log("localStorage sebelum submit:", { ...localStorage });
-
     try {
       const verifikasiValidasi = data
         .filter((item) => item.verified_by !== null)
@@ -144,9 +166,6 @@ function App() {
         severity: "error",
         open: true,
       });
-    } finally {
-      localStorage.removeItem("shortlist_id");
-      console.log("localStorage setelah submit:", { ...localStorage });
     }
   };
 
@@ -188,6 +207,7 @@ function App() {
       <Formik initialValues={{ catatan_blok_1: "" }} onSubmit={handleSubmit}>
         {({ values, setFieldValue }) => (
           <Form>
+            {/* Tabel Data API (Static) */}
             <div className="rounded-[16px] border border-gray-200 overflow-hidden mt-4">
               <div className="overflow-x-auto">
                 <table className="table-fixed w-full">
@@ -196,8 +216,93 @@ function App() {
                       <th className="px-3 py-6 text-sm text-center w-[40px]">
                         No
                       </th>
-                      <th className="px-3 py-6 text-sm w-full">
-                        Kelengkapan Dokumen
+                      <th className="px-3 py-6 text-sm text-left w-[180px]">
+                        Daftar SIMAK
+                      </th>
+                      <th className="px-3 py-6 text-sm text-center w-[200px] hidden">
+                        Status Pemeriksaan
+                      </th>
+                      <th className="px-3 py-6 text-sm text-center w-[140px]">
+                        Memenuhi
+                      </th>
+                      <th className="px-3 py-6 text-sm text-center w-[140px]">
+                        Tidak Memenuhi
+                      </th>
+                      <th className="px-3 py-6 text-sm text-center w-[140px] hidden">
+                        Verified By
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {combinedData.length > 0 ? (
+                      combinedData.map((item, index) => (
+                        <tr
+                          key={index}
+                          className={`${
+                            index % 2 === 0
+                              ? "bg-custom-neutral-0"
+                              : "bg-custom-neutral-100"
+                          }`}
+                        >
+                          <td className="px-3 py-4 text-sm text-center">
+                            {item.nomor}
+                          </td>
+                          <td className="px-3 py-4 text-sm">
+                            {item.kelengkapan_dokumen}
+                          </td>
+                          <td className="px-3 py-4 text-sm text-center hidden">
+                            {item.status_pemeriksaan}
+                          </td>
+                          <td className="px-3 py-4 text-sm hidden">
+                            {item.verified_by}
+                          </td>
+                          <td className="px-3 py-4 text-sm text-center">
+                            {item.showRadio ? (
+                              <input
+                                type="radio"
+                                name={`radio-${index}`}
+                                checked={item.status_pemeriksaan === "memenuhi"}
+                                disabled={!item.showRadio}
+                              />
+                            ) : null}
+                          </td>
+                          <td className="px-3 py-4 text-sm text-center">
+                            {item.showRadio ? (
+                              <input
+                                type="radio"
+                                name={`radio-${index}`}
+                                checked={item.status_pemeriksaan !== "memenuhi"}
+                                disabled={!item.showRadio}
+                              />
+                            ) : null}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan={5}
+                          style={{ textAlign: "center", padding: "10px" }}
+                        >
+                          Tidak ada data
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="rounded-[16px] border border-gray-200 overflow-hidden mt-4">
+              <div className="overflow-x-auto">
+                <table className="table-fixed w-full">
+                  <thead>
+                    <tr className="bg-custom-blue-100 text-left text-emphasis-on_surface-high uppercase tracking-wider">
+                      <th className="px-3 py-6 text-sm text-center w-[40px]">
+                        No
+                      </th>
+                      <th className="px-3 py-6 text-sm w-[180px]">
+                        Daftar Simak
                       </th>
                       <th className="px-3 py-6 text-sm text-center w-[150px] hidden">
                         ID Pemeriksaan
@@ -208,52 +313,85 @@ function App() {
                       <th className="px-3 py-6 text-sm text-center w-[200px] hidden">
                         Verified By
                       </th>
-                      <th className="px-3 py-6 text-sm text-center w-[370px]">
+                      <th className="px-3 py-6 text-sm text-center w-[140px]">
                         Memenuhi
                       </th>
-                      <th className="px-3 py-6 text-sm text-center w-[370px]">
+                      <th className="px-3 py-6 text-sm text-center w-[140px]">
                         Tidak Memenuhi
                       </th>
                     </tr>
                   </thead>
                   <tbody>
-                    {loading ? (
-                      <tr>
-                        <td colSpan="6" className="text-center py-4">
-                          Loading data...
+                    {data.map((item, index) => (
+                      <tr
+                        key={item.id_pemeriksaan}
+                        className={`${
+                          index % 2 === 0
+                            ? "bg-custom-neutral-0"
+                            : "bg-custom-neutral-100"
+                        }`}
+                      >
+                        <td className="px-3 py-4 text-sm text-center">
+                          {item.nomor}
                         </td>
-                      </tr>
-                    ) : data && Array.isArray(data) && data.length > 0 ? (
-                      data.map((item, index) => (
-                        <tr
-                          key={item.id_pemeriksaan || index}
-                          className={`${
-                            index % 2 === 0
-                              ? "bg-custom-neutral-0"
-                              : "bg-custom-neutral-100"
-                          }`}>
-                          <td className="px-3 py-4 text-sm text-center">
-                            {item.nomor}
-                          </td>
-                          <td className="px-3 py-4 text-sm">
-                            {item.kelengkapan_dokumen}
-                          </td>
-                          {/* Rest of your table */}
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="6" className="text-center py-4">
-                          Tidak ada data tersedia.
+                        <td className="px-3 py-4 text-sm">
+                          {item.kelengkapan_dokumen}
                         </td>
+                        <td className="px-3 py-4 text-sm text-center hidden">
+                          {item.id_pemeriksaan}
+                        </td>
+                        <td className="px-3 py-4 text-sm hidden">
+                          {item.status_pemeriksaan || "Belum Dipilih"}
+                        </td>
+                        <td className="px-3 py-4 text-sm hidden">
+                          {item.verified_by}
+                        </td>
+
+                        {/* Tombol radio hanya muncul jika item.verified_by tidak null */}
+                        {item.id_pemeriksaan && item.verified_by !== null && (
+                          <>
+                            <td className="px-3 py-4 text-sm text-center">
+                              <input
+                                type="radio"
+                                id={`status-${item.id_pemeriksaan}-memenuhi`}
+                                name={`status-${item.id_pemeriksaan}`}
+                                value="memenuhi"
+                                checked={item.status_pemeriksaan === "memenuhi"}
+                                onChange={() =>
+                                  handleChange(item.id_pemeriksaan, "memenuhi")
+                                }
+                                className="mr-2"
+                              />
+                            </td>
+                            <td className="px-3 py-4 text-sm text-center">
+                              <input
+                                type="radio"
+                                id={`status-${item.id_pemeriksaan}-tidak memenuhi`}
+                                name={`status-${item.id_pemeriksaan}`}
+                                value="tidak memenuhi"
+                                checked={
+                                  item.status_pemeriksaan === "tidak memenuhi"
+                                }
+                                onChange={() =>
+                                  handleChange(
+                                    item.id_pemeriksaan,
+                                    "tidak memenuhi"
+                                  )
+                                }
+                                className="mr-2"
+                              />
+                            </td>
+                          </>
+                        )}
                       </tr>
-                    )}
+                    ))}
                   </tbody>
                 </table>
               </div>
             </div>
             <h4 className="text-H4 text-emphasis-on_surface-high mt-6 mb-3 ">
-              Unggah Berita Acara
+              Unggah Berita Acara Penetapan Harga / Berita Acara Penetapan Harga
+              Hasil Rekonsiliasi
             </h4>
             <FileInput
               onFileSelect={(files) => {
@@ -279,7 +417,8 @@ function App() {
                 variant="solid_blue"
                 size="Medium"
                 type="submit"
-                disabled={isSubmitDisabled}>
+                disabled={isSubmitDisabled}
+              >
                 Simpan
               </Button>
             </div>
@@ -318,7 +457,8 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                 selectedValue === tabIndex
                   ? "bg-custom-blue-500 text-emphasis-on_color-high"
                   : "text-emphasis-on_surface-medium hover:bg-surface-light-overlay"
-              }`}>
+              }`}
+            >
               {item}
             </button>
           ))}
@@ -333,9 +473,8 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                   ? "bg-custom-blue-500 text-white"
                   : "bg-gray-200 text-gray-800"
               } px-4 py-2 rounded-lg`}
-              onClick={
-                button.onClick || (() => console.log("Button clicked!"))
-              }>
+              onClick={button.onClick || (() => console.log("Button clicked!"))}
+            >
               {button.label || "Button"}
             </button>
           )}
