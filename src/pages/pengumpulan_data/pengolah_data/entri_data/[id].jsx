@@ -255,25 +255,33 @@ export default function EntriData() {
                   (option) => option.value === values.user_id_petugas_lapangan
                 ) || null
               }
-              onSelect={(selectedOption) =>
+              onSelect={(selectedOption) => {
                 setFieldValue(
                   "user_id_petugas_lapangan",
                   selectedOption ? selectedOption.value : null
-                )
-              }
+                );
+                const selectedPetugasLapangan = petugasLapanganuserOptions.find(
+                  (option) => option.value === selectedOption.value
+                );
+                setFieldValue(
+                  "nip_petugas_lapangan",
+                  selectedPetugasLapangan ? selectedPetugasLapangan.nip : ""
+                );
+              }}
               size="Medium"
               errorMessage="Nama Petugas Lapangan tidak boleh kosong"
             />
-
             <TextInput
-              label="NIP"
+              label="NIP Petugas Lapangan"
               labelPosition="left"
-              placeholder="Masukkan NIP Petugas Lapangan"
-              // isRequired={true}
+              placeholder="Masukkan NIP Pengawas"
+              disabledActive={true}
               size="Medium"
-              errorMessage="NIP tidak boleh kosong"
-              value={values.nip || ""}
-              onChange={(e) => setFieldValue("nip", e.target.value)}
+              errorMessage="NIP pengawas tidak boleh kosong"
+              value={values.nip_petugas_lapangan || ""}
+              onChange={(e) =>
+                setFieldValue("nip_petugas_lapangan", e.target.value)
+              }
             />
             <div
               style={{
@@ -323,12 +331,19 @@ export default function EntriData() {
                   (option) => option.value === values.user_id_pengawas
                 ) || null
               }
-              onSelect={(selectedOption) =>
+              onSelect={(selectedOption) => {
                 setFieldValue(
                   "user_id_pengawas",
                   selectedOption ? selectedOption.value : null
-                )
-              }
+                );
+                const selectedPengawas = pengawasUserOptions.find(
+                  (option) => option.value === selectedOption.value
+                );
+                setFieldValue(
+                  "nip_pengawas",
+                  selectedPengawas ? selectedPengawas.nip : ""
+                );
+              }}
               size="Medium"
               errorMessage="Nama Pengawas tidak boleh kosong"
             />
@@ -336,10 +351,10 @@ export default function EntriData() {
               label="NIP Pengawas"
               labelPosition="left"
               placeholder="Masukkan NIP Pengawas"
-              // isRequired={true}
+              disabledActive={true}
               size="Medium"
               errorMessage="NIP pengawas tidak boleh kosong"
-              // value={values.nip_pengawas || ""}
+              value={values.nip_pengawas || ""}
               onChange={(e) => setFieldValue("nip_pengawas", e.target.value)}
             />
             <div

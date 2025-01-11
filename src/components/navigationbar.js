@@ -15,14 +15,18 @@ const Navbar = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const [isProfileHovered, setIsProfileHovered] = useState(false);
   const [role, setRole] = useState(null);
+  const [username, setUsername] = useState(null);
   let hoverTimeout;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedRole = localStorage.getItem("role");
+      const storedUsername = localStorage.getItem("username");
       setRole(storedRole);
+      setUsername(storedUsername);
     }
   }, []);
+
 
   useEffect(() => {
     console.log("User role:", role);
@@ -120,30 +124,34 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      const response = await fetch(
-        "http://api-ecatalogue-staging.online/api/logout",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({}),
-        }
-      );
+  localStorage.removeItem("token");
+  localStorage.removeItem("username");
+  localStorage.removeItem("role");
+  window.location.href = "/login";
+    // try {
+    //   const response = await fetch(
+    //     "http://api-ecatalogue-staging.online/api/logout",
+    //     {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+    //       },
+    //       body: JSON.stringify({}),
+    //     }
+    //   );
 
-      if (response.ok) {
-        localStorage.removeItem("token");
-        router.push("/login");
-      } else {
-        setAlertMessage("Keluar gagal");
-        setAlertOpen(true);
-      }
-    } catch (error) {
-      setAlertMessage("Error saat logout: " + error.message);
-      setAlertOpen(true);
-    }
+    //   if (response.ok) {
+    //     localStorage.removeItem("token");
+    //     router.push("/login");
+    //   } else {
+    //     setAlertMessage("Keluar gagal");
+    //     setAlertOpen(true);
+    //   }
+    // } catch (error) {
+    //   setAlertMessage("Error saat logout: " + error.message);
+    //   setAlertOpen(true);
+    // }
   };
 
   return (
@@ -378,10 +386,12 @@ const Navbar = () => {
             </div>
             <div className="space-y-1 flex flex-col">
               <span className="text-emphasis-on_surface-high text-ExtraSmall">
-                Role
+              {role || "Loading..."}
               </span>
               <span className="text-emphasis-on_surface-high text-H6">
-                Username
+              {(username && username.includes("@gmail.com") 
+  ? username.replace("@gmail.com", "") 
+  : username) || "Loading..."}
               </span>
             </div>
           </div>

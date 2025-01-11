@@ -7,24 +7,27 @@ import Button from "../../components/button";
 import Dropdown from "../../components/dropdown";
 import axios from "axios";
 import CustomAlert from "../../components/alert";
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api'
+import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
 // import { Console } from "console";
 
 const containerStyle = {
-  width: '600px',
+  width: '100%',
   height: '400px',
+  borderRadius: '16px',
+  overflow: 'hidden',
 }
 
 const center = {
-  lat: -3.745,
-  lng: -38.523,
-}  
+  lat: -6.236307766247564,
+  lng: 106.80058533427567, 
+};
 const InputVendor = ({ onNext, onBack, onClose }) => {
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: 'AIzaSyB8rzsPylVTp7WFWmXxXvWOpVCIhVdySCo',
   })
   const [map, setMap] = React.useState(null)
+  const [markerPosition, setMarkerPosition] = useState(center); 
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [nama_vendor, setnama_vendor] = useState("");
   const [jenis_vendor_id, setjenis_vendor_id] = useState("");
@@ -346,9 +349,10 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
   // };
 
   const handleMapClick = (event) => {
-    const lat = event.latLng.lat(); // Get latitude
-    const lng = event.latLng.lng(); // Get longitude
-    setkoordinat(`Lat: ${lat}, Lng: ${lng}`); // Update the koordinat state with the clicked coordinates
+    const lat = event.latLng.lat();
+    const lng = event.latLng.lng();
+    setkoordinat(`${lat}, ${lng}`);
+    setMarkerPosition({ lat, lng });
   };
 
   const getOptions = () => {
@@ -536,14 +540,15 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
             <div className="flex-grow grid grid-cols-1 gap-4 py-8 px-6 rounded-[16px] bg-custom-neutral-100">
               <div className="space-y-6">
             <GoogleMap
+              Marker position={center}
               mapContainerStyle={containerStyle}
               center={center}
               zoom={10}
               onLoad={onLoad}
               onUnmount={onUnmount}
-              onClick={handleMapClick} // Map click handler to set coordinates
+              onClick={handleMapClick}
             >
-              {/* Add your markers or other components */}
+                        <Marker position={markerPosition} />
             </GoogleMap>
                 <TextInput
                   label="Koordinat"

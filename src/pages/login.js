@@ -53,10 +53,9 @@ const Login = () => {
         throw new Error(data.message || "Login failed.");
       }
 
-      // Simpan token ke localStorage
       localStorage.setItem("token", data.token);
+      localStorage.setItem("username", data.data.username);
 
-      // Cek role pengguna
       const roleResponse = await fetch(
         "https://api-ecatalogue-staging.online/api/check-role",
         {

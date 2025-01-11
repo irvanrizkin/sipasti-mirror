@@ -8,6 +8,8 @@ const entri_datastore = create((set) => ({
   initialValues: {
     user_id_petugas_lapangan: "",
     user_id_pengawas: "",
+    nip_petugas_lapangan: "",
+    nip_pengawas: "",
     nama_pemberi_informasi: "",
     data_vendor_id: "",
     identifikasi_kebutuhan_id: "",
@@ -58,6 +60,7 @@ const entri_datastore = create((set) => ({
         response.data?.data.map((user) => ({
           value: user.user_id,
           label: user.nama_lengkap,
+          nip: user.nip,
         })) || [];
       set({ petugasLapanganuserOptions: options });
       console.log("User options berhasil diambil:", options);
@@ -77,7 +80,7 @@ const entri_datastore = create((set) => ({
         response.data?.data.map((user) => ({
           value: user.user_id,
           label: user.nama_lengkap,
-          nrp: user.nrp,
+          nip: user.nip,
         })) || [];
       set({ pengawasUserOptions: options });
       console.log("User options berhasil diambil:", options);
