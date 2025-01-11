@@ -26,10 +26,10 @@ export default function EntriData() {
   const [helperText, setHelperText] = useState("");
   const {
     selectedValue,
-    userOptions,
+    petugasLapanganuserOptions,
     pengawasUserOptions,
     fetchPengawasUserOptions,
-    fetchUserOptions,
+    fetchPetugasLapanganUserOptions,
     initialValues,
     material,
     peralatan,
@@ -45,8 +45,8 @@ export default function EntriData() {
   const { id } = router.query;
 
   useEffect(() => {
-    fetchUserOptions();
-  }, [fetchUserOptions]);
+    fetchPetugasLapanganUserOptions();
+  }, [fetchPetugasLapanganUserOptions]);
 
   useEffect(() => {
     fetchPengawasUserOptions();
@@ -220,7 +220,7 @@ export default function EntriData() {
                 setFieldValue("nama_pemberi_informasi", e.target.value)
               }
             />
-            <TextInput
+            {/* <TextInput
               label="Tanda Tangan Responden"
               labelPosition="left"
               placeholder="Tanda Tangan Responden"
@@ -229,7 +229,7 @@ export default function EntriData() {
               errorMessage="Tanda tangan responden tidak boleh kosong"
               // value={values.nip_pengawas || ""}
               onChange={(e) => setFieldValue("nip_pengawas", e.target.value)}
-            />
+            /> */}
           </div>
         </div>
       </LocalizationProvider>
@@ -237,6 +237,7 @@ export default function EntriData() {
   };
 
   const PetugasLapanganForm = ({ values, setFieldValue }) => {
+    console.log("petugas value", values);
     return (
       <LocalizationProvider dateAdapter={AdapterDayjs} locale="id">
         <div className="mt-3 bg-neutral-100 px-6 py-8 rounded-[16px]">
@@ -248,13 +249,22 @@ export default function EntriData() {
               labelPosition="left"
               placeholder="Masukkan Petugas Lapangan"
               isRequired={true}
-              options={userOptions}
+              options={petugasLapanganuserOptions}
+              value={
+                petugasLapanganuserOptions.find(
+                  (option) => option.value === values.user_id_petugas_lapangan
+                ) || null
+              }
               onSelect={(selectedOption) =>
-                setFieldValue("user_id_petugas_lapangan", selectedOption.value)
+                setFieldValue(
+                  "user_id_petugas_lapangan",
+                  selectedOption ? selectedOption.value : null
+                )
               }
               size="Medium"
               errorMessage="Nama Petugas Lapangan tidak boleh kosong"
             />
+
             <TextInput
               label="NIP"
               labelPosition="left"
@@ -262,7 +272,7 @@ export default function EntriData() {
               // isRequired={true}
               size="Medium"
               errorMessage="NIP tidak boleh kosong"
-              // value={values.nip || ""}
+              value={values.nip || ""}
               onChange={(e) => setFieldValue("nip", e.target.value)}
             />
             <div
@@ -308,8 +318,16 @@ export default function EntriData() {
               placeholder="Masukkan Nama Pengawas"
               isRequired={true}
               options={pengawasUserOptions}
+              value={
+                pengawasUserOptions.find(
+                  (option) => option.value === values.user_id_pengawas
+                ) || null
+              }
               onSelect={(selectedOption) =>
-                setFieldValue("user_id_pengawas", selectedOption.value)
+                setFieldValue(
+                  "user_id_pengawas",
+                  selectedOption ? selectedOption.value : null
+                )
               }
               size="Medium"
               errorMessage="Nama Pengawas tidak boleh kosong"
