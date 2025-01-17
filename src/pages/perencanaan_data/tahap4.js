@@ -10,6 +10,7 @@ import Modal from "../../components/modal";
 import Navbar from "../../components/navigationbar";
 import Stepper from "../../components/stepper";
 import { CloseCircle } from "iconsax-react";
+import tahap4Store from "./tahap4/tahap4store";
 
 const Tahap4 = ({ onNext, onBack, onClose }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,7 +70,8 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
           onClick={() => {
             setIsConfirmModalFinalOpen(false);
             handleCloseModal();
-          }}>
+          }}
+        >
           Ya, Cetak
         </Button>
       </div>
@@ -195,7 +197,7 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
   const [deletedDataTenagaKerja, setDeletedDataTenagaKerja] = useState([]);
   const itemsPerPage = 10;
   const filterOptionsMaterial = [
-    { label: "Material", accessor: "nama_vendor", checked: true },
+    { label: "Material", accessor: "nama_vendor", checked: false },
     { label: "Satuan", accessor: "sumber_daya", checked: false },
     { label: "Spesifikasi", accessor: "pemilik_vendor", checked: false },
     { label: "Ukuran", accessor: "alamat", checked: false },
@@ -207,7 +209,7 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
     { label: "Kabupaten/Kota", accessor: "kontak", checked: false },
   ];
   const filterOptionsPeralatan = [
-    { label: "Nama Peralatan", accessor: "nama_vendor", checked: true },
+    { label: "Nama Peralatan", accessor: "nama_vendor", checked: false },
     { label: "Satuan", accessor: "sumber_daya", checked: false },
     { label: "Spesifikasi", accessor: "pemilik_vendor", checked: false },
     { label: "Kapasitas", accessor: "alamat", checked: false },
@@ -219,7 +221,7 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
     { label: "Kabupaten/Kota", accessor: "kontak", checked: false },
   ];
   const filterOptionsTenagaKerja = [
-    { label: "Nama Pekerja", accessor: "nama_vendor", checked: true },
+    { label: "Nama Pekerja", accessor: "nama_vendor", checked: false },
     { label: "Satuan", accessor: "sumber_daya", checked: false },
     { label: "Jumlah Kebutuhan", accessor: "pemilik_vendor", checked: false },
     { label: "Kodefikasi", accessor: "kontak", checked: false },
@@ -227,7 +229,7 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
     { label: "Kabupaten/Kota", accessor: "kontak", checked: false },
   ];
   const filterOptionsVendor = [
-    { label: "Responden/Vendor", accessor: "nama_vendor", checked: true },
+    { label: "Responden/Vendor", accessor: "nama_vendor", checked: false },
     { label: "Pemilik Vendor", accessor: "pemilik_vendor", checked: false },
     { label: "Alamat", accessor: "alamat", checked: false },
     { label: "Kontak", accessor: "kontak", checked: false },
@@ -296,15 +298,20 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
     setSearchMaterialQuery(query);
 
     if (!query) {
-      setDataMaterial(allDataMaterial); // Reset if query is empty
+      setDataMaterial(allDataMaterial);
       return;
     }
 
-    const filteredMaterials = allDataMaterial.filter((item) =>
-      Object.values(item).some((val) =>
-        String(val).toLowerCase().includes(query.toLowerCase())
-      )
-    );
+    const filteredMaterials = allDataMaterial.filter((item) => {
+      if (!materialFilters.length) {
+        return Object.values(item).some((val) =>
+          String(val).toLowerCase().includes(query.toLowerCase())
+        );
+      }
+      return materialFilters.some((key) => {
+        return String(item[key]).toLowerCase().includes(query.toLowerCase());
+      });
+    });
     setDataMaterial(filteredMaterials);
   };
 
@@ -313,7 +320,7 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
     setSearchPeralatanQuery(query);
 
     if (!query) {
-      setEquipmentData(allDataPeralatan); // Reset if query is empty
+      setEquipmentData(allDataPeralatan);
       return;
     }
 
@@ -330,7 +337,7 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
     setSearchTenagaKerjaQuery(query);
 
     if (!query) {
-      setDataTenagaKerja(allDataTenagaKerja); // Reset if query is empty
+      setDataTenagaKerja(allDataTenagaKerja);
       return;
     }
 
@@ -345,15 +352,20 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
     setSearchVendorQuery(query);
 
     if (!query) {
-      setDataVendor(allDataVendor); // Reset if query is empty
+      setDataVendor(allDataVendor);
       return;
     }
 
-    const filteredVendors = allDataVendor.filter((item) =>
-      Object.values(item).some((val) =>
-        String(val).toLowerCase().includes(query.toLowerCase())
-      )
-    );
+    const filteredVendors = allDataVendor.filter((item) => {
+      if (!vendorFilters.length) {
+        return Object.values(item).some((val) =>
+          String(val).toLowerCase().includes(query.toLowerCase())
+        );
+      }
+      return vendorFilters.some((key) => {
+        return String(item[key]).toLowerCase().includes(query.toLowerCase());
+      });
+    });
     setDataVendor(filteredVendors);
   };
 
@@ -377,6 +389,13 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
         );
     }
   }, [selectedVendorId, isModalOpen]);
+
+  const {
+    vendorFilters,
+    materialFilters,
+    setVendorFilters,
+    setMaterialFilters,
+  } = tahap4Store();
 
   const handleAdjustData = async () => {
     if (!selectedVendorId) {
@@ -419,6 +438,7 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
       console.error("An error occurred during submission:", error);
     }
   };
+
   return (
     <div className="p-8">
       <Navbar />
@@ -496,8 +516,17 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
                         withFilter={true}
                         filterOptions={filterOptionsMaterial}
                         onFilterClick={(filters) => {
-                          console.log("Filter option clicked:", filters); // Debug
-                          handleFilterClick(filters);
+                          let materialFilters = [];
+                          for (const filter of filters) {
+                            if (filter.checked) {
+                              materialFilters.push(filter.accessor);
+                            } else {
+                              materialFilters = materialFilters.filter(
+                                (item) => item !== filter.accessor
+                              );
+                            }
+                          }
+                          setMaterialFilters(materialFilters);
                         }}
                       />
                       <Table
@@ -641,8 +670,18 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
               withFilter={true}
               filterOptions={filterOptionsVendor}
               onFilterClick={(filters) => {
-                console.log("Filter option clicked:", filters); // Debug
-                handleFilterClick(filters);
+                let vendorFilters = [];
+                for (const filter of filters) {
+                  if (filter.checked) {
+                    vendorFilters.push(filter.accessor);
+                  } else {
+                    vendorFilters = vendorFilters.filter(
+                      (item) => item !== filter.accessor
+                    );
+                  }
+                }
+                setVendorFilters(vendorFilters);
+                // handleFilterClick(filters);
               }}
             />
             <Table
@@ -694,7 +733,8 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
                   <h5 className="text-H5">Shorlist MPK yang akan disurvei</h5>
                   <button
                     className="text-emphasis-on_surface-high"
-                    onClick={handleCloseModal}>
+                    onClick={handleCloseModal}
+                  >
                     <CloseCircle size="24" />
                   </button>
                 </div>
@@ -877,7 +917,8 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
                   <Button
                     variant="outlined_yellow"
                     size="Medium"
-                    onClick={handleCloseModal}>
+                    onClick={handleCloseModal}
+                  >
                     Kembali
                   </Button>
                   <Button
@@ -891,7 +932,8 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
                     //   }
                     // }}
                     // onClick={handleAdjustData}
-                    onClick={handleDeleteAndContinue}>
+                    onClick={handleDeleteAndContinue}
+                  >
                     Simpan & Lanjut
                   </Button>
                 </div>
@@ -906,7 +948,8 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
                       <Button
                         variant="outlined_yellow"
                         size="Medium"
-                        onClick={cancelDelete}>
+                        onClick={cancelDelete}
+                      >
                         Batal
                       </Button>
                       <Button
@@ -916,7 +959,8 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
                           handleAdjustData();
                           setIsConfirmModalOpen(false);
                           handleCloseModal();
-                        }}>
+                        }}
+                      >
                         Ya, Cetak
                       </Button>
                     </div>
@@ -928,7 +972,8 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
               <Button
                 variant="outlined_yellow"
                 size="Medium"
-                onClick={navigateToTahap3}>
+                onClick={navigateToTahap3}
+              >
                 Kembali
               </Button>
               <Button
@@ -949,7 +994,8 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
                     <Button
                       variant="outlined_yellow"
                       size="Medium"
-                      onClick={() => setIsConfirmModalFinalOpen(false)}>
+                      onClick={() => setIsConfirmModalFinalOpen(false)}
+                    >
                       Batal
                     </Button>
 

@@ -47,30 +47,35 @@ export default function informasi_tahap_pengumpulan() {
     applySearchAndFilter(searchQuery, updatedFilters);
   };
 
-  const applySearchAndFilter = (query, filters) => {
-    const lowerQuery = query.toLowerCase();
-    const isFilterActive = Object.values(filters).some((value) => value);
-
-    const result = vendor.filter((item) => {
-      const matchesSearch =
-        item.nama_vendor?.toLowerCase().includes(lowerQuery) ||
-        item.pemilik_vendor?.toLowerCase().includes(lowerQuery) ||
-        item.alamat?.toLowerCase().includes(lowerQuery) ||
-        item.kontak?.toLowerCase().includes(lowerQuery);
-
-      if (!isFilterActive) {
-        return matchesSearch;
+  const applySearchAndFilter = React.useCallback(
+    (query, filters) => {
+      if (!Array.isArray(vendor)) {
+        return [];
       }
 
-      const matchesFilter = Object.keys(filters).some((key) => {
-        return filters[key] && item[key]?.toLowerCase().includes(lowerQuery);
+      const lowerQuery = query.toLowerCase();
+      const isFilterActive = Object.values(filters).some((value) => value);
+
+      return vendor.filter((item) => {
+        const matchesSearch =
+          item.nama_vendor?.toLowerCase().includes(lowerQuery) ||
+          item.pemilik_vendor?.toLowerCase().includes(lowerQuery) ||
+          item.alamat?.toLowerCase().includes(lowerQuery) ||
+          item.kontak?.toLowerCase().includes(lowerQuery);
+
+        if (!isFilterActive) {
+          return matchesSearch;
+        }
+
+        const matchesFilter = Object.keys(filters).some((key) => {
+          return filters[key] && item[key]?.toLowerCase().includes(lowerQuery);
+        });
+
+        return matchesSearch && matchesFilter;
       });
-
-      return matchesSearch && matchesFilter;
-    });
-
-    setFilteredVendor(result);
-  };
+    },
+    [vendor]
+  );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isGenerateLinkModalOpen, setIsGenerateLinkModalOpen] = useState(false);
@@ -86,8 +91,58 @@ export default function informasi_tahap_pengumpulan() {
     { label: "Kontak", accessor: "kontak", checked: false },
   ];
 
+  const CountdownTimer = () => {
+    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+    const targetTime = React.useMemo(() => {
+      const tenDaysFromNow = new Date();
+      tenDaysFromNow.setDate(tenDaysFromNow.getDate() + 10);
+      return tenDaysFromNow;
+    }, []);
+
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setTimeLeft(calculateTimeLeft(targetTime));
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }, [targetTime]);
+
+    function calculateTimeLeft(target) {
+      const difference = target - new Date();
+
+      if (difference > 0) {
+        return {
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / (1000 * 60)) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        };
+      }
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+
+    useEffect(() => {
+      console.log("Waktu tersisa:", timeLeft);
+    }, [timeLeft]);
+
+    return (
+      <div>
+        Link akan kadaluarsa pada:{" "}
+        {`${timeLeft.days.toString().padStart(2, "0")} hari 
+        ${timeLeft.hours.toString().padStart(2, "0")} jam 
+        ${timeLeft.minutes.toString().padStart(2, "0")} menit 
+        ${timeLeft.seconds.toString().padStart(2, "0")} detik`}
+      </div>
+    );
+  };
+
   useEffect(() => {
-    setFilteredVendor(vendor);
+    if (Array.isArray(vendor)) {
+      setFilteredVendor(vendor);
+    } else {
+      setFilteredVendor([]);
+    }
   }, [vendor]);
 
   const handleLinkClick = async (shortlist_id) => {
@@ -106,7 +161,10 @@ export default function informasi_tahap_pengumpulan() {
 
   const handleSearch = (query) => {
     setSearchQuery(query);
-    applySearchAndFilter(query, activeFilters);
+    const newFilteredVendor = applySearchAndFilter(query, activeFilters);
+    if (JSON.stringify(filteredVendor) !== JSON.stringify(newFilteredVendor)) {
+      setFilteredVendor(newFilteredVendor);
+    }
   };
 
   const handleToggleMenu = (rowId, event) => {
@@ -160,6 +218,10 @@ export default function informasi_tahap_pengumpulan() {
     }
   };
 
+  // useEffect(() => {
+  //   console.log("Filtered Vendor:", filteredVendor);
+  // }, [filteredVendor]);
+
   useEffect(() => {
     fetchStatusProgres();
   }, [fetchStatusProgres]);
@@ -168,17 +230,24 @@ export default function informasi_tahap_pengumpulan() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
   const paginatedVendor = Array.isArray(filteredVendor)
     ? filteredVendor.slice(
         (currentModal - 1) * itemsPerPageModal,
         currentModal * itemsPerPageModal
       )
     : [];
-  const openModal = (id_paket) => {
-    console.log("Membuka modal untuk ID Paket:", id_paket);
-    fetchVendor(id_paket);
-    setIsModalOpen(true);
-  };
+
+  const openModal = React.useCallback(
+    (id_paket) => {
+      console.log("Membuka modal untuk ID Paket:", id_paket);
+      if (!isModalOpen) {
+        fetchVendor(id_paket);
+        setIsModalOpen(true);
+      }
+    },
+    [fetchVendor, isModalOpen]
+  );
 
   const openGenerateLinkModal = async (shortlist_id) => {
     console.log("Vendor data received:", shortlist_id);
@@ -259,7 +328,8 @@ export default function informasi_tahap_pengumpulan() {
                       index % 2 === 0
                         ? "bg-custom-neutral-0"
                         : "bg-custom-neutral-100"
-                    }`}>
+                    }`}
+                  >
                     <td className="px-3 py-6 text-sm text-center">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
@@ -274,7 +344,8 @@ export default function informasi_tahap_pengumpulan() {
                         <button
                           className={`w-[52px] h-[52px] rounded-full flex items-center justify-center transition-colors 
                           hover:bg-custom-blue-50 cursor-pointer`}
-                          onClick={(e) => handleToggleMenu(item.id, e)}>
+                          onClick={(e) => handleToggleMenu(item.id, e)}
+                        >
                           <More
                             size="24"
                             color={colors.Emphasis.Light.On_Surface.High}
@@ -295,7 +366,6 @@ export default function informasi_tahap_pengumpulan() {
         totalData={status_progres.length}
         onPageChange={setCurrentPage}
       />
-
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         <div className="p-4">
           <div className="flex justify-between items-center mb-4 content-center">
@@ -340,7 +410,8 @@ export default function informasi_tahap_pengumpulan() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}>
+                          }`}
+                        >
                           <td className="px-3 py-6 text-sm">
                             {item.nama_vendor}
                           </td>
@@ -354,7 +425,8 @@ export default function informasi_tahap_pengumpulan() {
                             hover:bg-custom-blue-50 cursor-pointer`}
                               onClick={(e) =>
                                 handleToggleVendorMenu(item.shortlist_id, e)
-                              }>
+                              }
+                            >
                               <More
                                 size="24"
                                 color={colors.Emphasis.Light.On_Surface.High}
@@ -371,33 +443,62 @@ export default function informasi_tahap_pengumpulan() {
                                   zIndex: 10000,
                                   boxShadow:
                                     "0px 4px 16px 0px rgba(165, 163, 174, 0.45)",
-                                }}>
-                                <Link
-                                  href="#"
-                                  className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
-                                  onClick={() =>
-                                    handleLinkClick(item.shortlist_id)
-                                  }>
-                                  Lihat PDF
-                                </Link>
-                                <Link
-                                  href={`/pengumpulan_data/pengolah_data/entri_data/${item.shortlist_id}`}
-                                  className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200">
-                                  Entri Data
-                                </Link>
-                                <Link
-                                  href={`/pengumpulan_data/pengawas/pemeriksaan_data/${item.shortlist_id}`}
-                                  className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200">
-                                  Pemeriksaan
-                                </Link>
-                                <Link
-                                  href="#"
-                                  className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
-                                  onClick={() =>
-                                    openGenerateLinkModal(item.shortlist_id)
-                                  }>
-                                  Generate Link Kuesioner
-                                </Link>
+                                }}
+                              >
+                                {(() => {
+                                  const role = localStorage.getItem("role");
+
+                                  return (
+                                    <>
+                                      {(role === "superadmin" ||
+                                        role === "Pengawas" ||
+                                        role === "Pengolah Data" ||
+                                        role === "Petugas Lapangan") && (
+                                        <Link
+                                          href="#"
+                                          className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
+                                          onClick={() =>
+                                            handleLinkClick(item.shortlist_id)
+                                          }
+                                        >
+                                          Lihat PDF
+                                        </Link>
+                                      )}
+                                      {(role === "superadmin" ||
+                                        role === "Pengolah Data") && (
+                                        <Link
+                                          href={`/pengumpulan_data/pengolah_data/entri_data/${item.shortlist_id}`}
+                                          className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
+                                        >
+                                          Entri Data
+                                        </Link>
+                                      )}
+                                      {(role === "superadmin" ||
+                                        role === "Pengawas") && (
+                                        <Link
+                                          href={`/pengumpulan_data/pengawas/pemeriksaan_data/${item.shortlist_id}`}
+                                          className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
+                                        >
+                                          Pemeriksaan
+                                        </Link>
+                                      )}
+                                      {(role === "superadmin" ||
+                                        role === "Pengawas") && (
+                                        <Link
+                                          href="#"
+                                          className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
+                                          onClick={() =>
+                                            openGenerateLinkModal(
+                                              item.shortlist_id
+                                            )
+                                          }
+                                        >
+                                          Generate Link Kuesioner
+                                        </Link>
+                                      )}
+                                    </>
+                                  );
+                                })()}
                               </div>
                             )}
                           </td>
@@ -407,7 +508,8 @@ export default function informasi_tahap_pengumpulan() {
                       <tr>
                         <td
                           className="px-3 py-6 text-B1 text-center text-emphasis-on_surface-medium"
-                          colSpan="4">
+                          colSpan="4"
+                        >
                           Tidak ada data tersedia
                         </td>
                       </tr>
@@ -427,7 +529,6 @@ export default function informasi_tahap_pengumpulan() {
           </div>
         </div>
       </Modal>
-
       {/* Modal Baru */}
       <Modal isOpen={isGenerateLinkModalOpen} onClose={closeGenerateLinkModal}>
         <div className="p-3 space-y-3">
@@ -450,7 +551,7 @@ export default function informasi_tahap_pengumpulan() {
             />
             <button
               className={`w-[52px] h-[52px] rounded-full flex items-center justify-center transition-colors 
-      hover:bg-custom-blue-50 cursor-pointer border-2 border-surface-light-outline outline-none focus:outline-custom-blue-500`}
+         hover:bg-custom-blue-50 cursor-pointer border-2 border-surface-light-outline outline-none focus:outline-custom-blue-500`}
               onClick={() => {
                 navigator.clipboard
                   .writeText(urlKuisionerResult)
@@ -460,24 +561,31 @@ export default function informasi_tahap_pengumpulan() {
                   .catch(() => {
                     alert("Gagal menyalin link.");
                   });
-              }}>
+              }}
+            >
               <ClipboardText
                 size="24"
                 color={colors.Emphasis.Light.On_Surface.High}
               />
             </button>
           </div>
+          {/* Timestamp and Countdown Timer Section */}
+          <div className="text-small text-custom-red-500 mt-2">
+            <div>Terakhir diperbarui: {new Date().toLocaleString()}</div>
+            <CountdownTimer />
+          </div>
           <div className="flex justify-end gap-4">
             <Button
               variant="solid_blue"
               size="Medium"
-              onClick={closeGenerateLinkModal}>
+              onClick={closeGenerateLinkModal}
+            >
               Tutup
             </Button>
           </div>
         </div>
       </Modal>
-
+      ;
       {activeMenu && (
         <div
           className="absolute bg-white rounded-[12px] mr-[12px] shadow-lg p-2 w-56"
@@ -487,11 +595,13 @@ export default function informasi_tahap_pengumpulan() {
             right: menuPosition.alignRight ? 0 : undefined,
             zIndex: 10000,
             boxShadow: "0px 4px 16px 0px rgba(165, 163, 174, 0.45)",
-          }}>
+          }}
+        >
           <Link
             href="#"
             className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
-            onClick={() => openModal(activeMenu)}>
+            onClick={() => openModal(activeMenu)}
+          >
             Lihat Detail Kuesioner
           </Link>
         </div>

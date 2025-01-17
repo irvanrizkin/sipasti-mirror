@@ -15,6 +15,8 @@ const useStore = create((set) => ({
   alertMessage: "",
   alertSeverity: "info",
   isAlertOpen: false,
+  materialFilters: [],
+  setMaterialFilters: (filters) => set({ materialFilters: filters }),
   setAlertSeverity: (severity) => set({ alertSeverity: severity }),
   setAlertMessage: (message) => set({ alertMessage: message }),
   setIsAlertOpen: (value) => set({ isAlertOpen: value }),

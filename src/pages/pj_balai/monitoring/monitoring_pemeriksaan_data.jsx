@@ -151,7 +151,7 @@ export default function PenugasanTim() {
             boxShadow: "0px 4px 16px 0px rgba(165, 163, 174, 0.45)",
           }}
         >
-          <Link
+          {/* <Link
             href="/pj_balai/monitoring/monitoring_perencanaan_data"
             className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
           >
@@ -162,7 +162,7 @@ export default function PenugasanTim() {
             className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
           >
             Lihat Detail Kuesioner
-          </Link>
+          </Link> */}
           <div className="relative">
             <button
               className="block w-full px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200 text-left"

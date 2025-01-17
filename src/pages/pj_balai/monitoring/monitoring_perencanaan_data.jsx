@@ -19,6 +19,12 @@ export default function PenugasanTim() {
     alignRight: false,
   });
 
+  // const openModal = (id_paket) => {
+  //   console.log("Membuka modal untuk ID Paket:", id_paket);
+  //   fetchVendor(id_paket);
+  //   setIsModalOpen(true);
+  // };
+
   const handleToggleDropdown = (rowId, event) => {
     if (activeDropdown === rowId) {
       setActiveDropdown(null);
@@ -58,7 +64,7 @@ export default function PenugasanTim() {
       <Navbar />
       <div className="space-y-3 pt-8">
         <h3 className="text-H3 text-emphasis-on_surface-high">
-          Status Progres
+          Status Progres Perencanaan Data
         </h3>
         <div className="rounded-[16px] border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
@@ -86,9 +92,9 @@ export default function PenugasanTim() {
                   <th className="px-3 py-6 text-sm font-semibold w-[280px]">
                     Status
                   </th>
-                  <th className="px-3 py-6 text-sm font-semibold w-[52px] text-center relative">
+                  {/* <th className="px-3 py-6 text-sm font-semibold w-[52px] text-center relative">
                     Aksi
-                  </th>
+                  </th> */}
                 </tr>
               </thead>
               <tbody>
@@ -99,7 +105,8 @@ export default function PenugasanTim() {
                       index % 2 === 0
                         ? "bg-custom-neutral-0"
                         : "bg-custom-neutral-100"
-                    }`}>
+                    }`}
+                  >
                     <td className="px-3 py-6 text-sm text-center">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
@@ -109,19 +116,20 @@ export default function PenugasanTim() {
                     <td className="px-3 py-6 text-sm">{item.jabatan_ppk}</td>
                     <td className="px-3 py-6 text-sm">{item.kode_rup}</td>
                     <td className="px-3 py-6 text-sm">{item.status}</td>
-                    <td className="px-3 py-6 text-sm relative">
+                    {/* <td className="px-3 py-6 text-sm relative">
                       <div className="flex justify-center items-center gap-2">
                         <button
                           className={`w-[52px] h-[52px] rounded-full flex items-center justify-center transition-colors 
-        hover:bg-custom-blue-50 cursor-pointer`}
-                          onClick={(e) => handleToggleDropdown(item.id, e)}>
+                          hover:bg-custom-blue-50 cursor-pointer`}
+                          onClick={(e) => handleToggleDropdown(item.id, e)}
+                        >
                           <More
                             size="24"
                             color={colors.Emphasis.Light.On_Surface.High}
                           />
                         </button>
                       </div>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -147,17 +155,20 @@ export default function PenugasanTim() {
             right: dropdownPosition.alignRight ? 0 : undefined,
             zIndex: 10000,
             boxShadow: "0px 4px 16px 0px rgba(165, 163, 174, 0.45)",
-          }}>
-          <Link
+          }}
+        >
+          {/* <Link
             href="/pj_balai/monitoring/monitoring_perencanaan_data"
             className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200">
             Lihat PDF Kuesioner
-          </Link>
-          <Link
+          </Link> */}
+          {/* <Link
             href="/pj_balai/penugasan_tim/penugasan_tim"
-            className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200">
+            className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
+            onClick={() => openModal(activeMenu)}
+          >
             Lihat Detail Kuesioner
-          </Link>
+          </Link> */}
           <div className="relative">
             <button
               className="block w-full px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200 text-left"
@@ -166,7 +177,7 @@ export default function PenugasanTim() {
             >
               Penugasan Tim
               {activeSubMenu && (
-                <div 
+                <div
                   className="absolute right-full top-0 bg-white rounded-[12px] shadow-lg p-2 w-56 ml-1 text-left"
                   style={{
                     boxShadow: "0px 4px 16px 0px rgba(165, 163, 174, 0.45)",

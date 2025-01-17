@@ -27,10 +27,10 @@ export default function survei_kuesioner() {
   const [helperText, setHelperText] = useState("");
   const {
     selectedValue,
-    userOptions,
+    petugasLapanganuserOptions,
     pengawasUserOptions,
     fetchPengawasUserOptions,
-    fetchUserOptions,
+    fetchPetugasLapanganUserOptions,
     initialValues,
     material,
     peralatan,
@@ -46,8 +46,16 @@ export default function survei_kuesioner() {
   const { id } = router.query;
 
   useEffect(() => {
-    fetchUserOptions();
-  }, [fetchUserOptions]);
+    const role = localStorage.getItem("role");
+
+    if (role !== "Petugas Lapangan" && role !== "superadmin") {
+      router.push("/access-denied");
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPetugasLapanganUserOptions();
+  }, [fetchPetugasLapanganUserOptions]);
 
   useEffect(() => {
     fetchPengawasUserOptions();
@@ -78,22 +86,22 @@ export default function survei_kuesioner() {
       });
       return false;
     }
-    // if (!values.user_id_petugas_lapangan) {
-    //   setAlertInfo({
-    //     open: true,
-    //     severity: "error",
-    //     message: "Petugas lapangan wajib diisi!",
-    //   });
-    //   return false;
-    // }
-    // if (!values.user_id_pengawas) {
-    //   setAlertInfo({
-    //     open: true,
-    //     severity: "error",
-    //     message: "Pengawas wajib diisi!",
-    //   });
-    //   return false;
-    // }
+    if (!values.user_id_petugas_lapangan) {
+      setAlertInfo({
+        open: true,
+        severity: "error",
+        message: "Petugas lapangan wajib diisi!",
+      });
+      return false;
+    }
+    if (!values.user_id_pengawas) {
+      setAlertInfo({
+        open: true,
+        severity: "error",
+        message: "Pengawas wajib diisi!",
+      });
+      return false;
+    }
     if (!values.nama_pemberi_informasi) {
       setAlertInfo({
         open: true,
@@ -221,7 +229,7 @@ export default function survei_kuesioner() {
                 setFieldValue("nama_pemberi_informasi", e.target.value)
               }
             />
-            <TextInput
+            {/* <TextInput
               label="Tanda Tangan Responden"
               labelPosition="left"
               placeholder="Tanda Tangan Responden"
@@ -230,7 +238,7 @@ export default function survei_kuesioner() {
               errorMessage="Tanda tangan responden tidak boleh kosong"
               // value={values.nip_pengawas || ""}
               onChange={(e) => setFieldValue("nip_pengawas", e.target.value)}
-            />
+            /> */}
           </div>
         </div>
       </LocalizationProvider>
@@ -249,29 +257,47 @@ export default function survei_kuesioner() {
               labelPosition="left"
               placeholder="Masukkan Petugas Lapangan"
               isRequired={true}
-              options={userOptions}
-              onSelect={(selectedOption) =>
-                setFieldValue("user_id_petugas_lapangan", selectedOption.value)
+              options={petugasLapanganuserOptions}
+              value={
+                petugasLapanganuserOptions.find(
+                  (option) => option.value === values.user_id_petugas_lapangan
+                ) || null
               }
+              onSelect={(selectedOption) => {
+                setFieldValue(
+                  "user_id_petugas_lapangan",
+                  selectedOption ? selectedOption.value : null
+                );
+                const selectedPetugasLapangan = petugasLapanganuserOptions.find(
+                  (option) => option.value === selectedOption.value
+                );
+                setFieldValue(
+                  "nip_petugas_lapangan",
+                  selectedPetugasLapangan ? selectedPetugasLapangan.nip : ""
+                );
+              }}
               size="Medium"
               errorMessage="Nama Petugas Lapangan tidak boleh kosong"
             />
             <TextInput
-              label="NIP"
+              label="NIP Petugas Lapangan"
               labelPosition="left"
-              placeholder="Masukkan NIP Petugas Lapangan"
-              // isRequired={true}
+              placeholder="Masukkan NIP Pengawas"
+              disabledActive={true}
               size="Medium"
-              errorMessage="NIP tidak boleh kosong"
-              // value={values.nip || ""}
-              onChange={(e) => setFieldValue("nip", e.target.value)}
+              errorMessage="NIP pengawas tidak boleh kosong"
+              value={values.nip_petugas_lapangan || ""}
+              onChange={(e) =>
+                setFieldValue("nip_petugas_lapangan", e.target.value)
+              }
             />
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "256px",
-              }}>
+              }}
+            >
               <div className="text-B2" style={{ minWidth: "200px" }}>
                 Tanggal Survei
               </div>
@@ -308,9 +334,24 @@ export default function survei_kuesioner() {
               placeholder="Masukkan Nama Pengawas"
               isRequired={true}
               options={pengawasUserOptions}
-              onSelect={(selectedOption) =>
-                setFieldValue("user_id_pengawas", selectedOption.value)
+              value={
+                pengawasUserOptions.find(
+                  (option) => option.value === values.user_id_pengawas
+                ) || null
               }
+              onSelect={(selectedOption) => {
+                setFieldValue(
+                  "user_id_pengawas",
+                  selectedOption ? selectedOption.value : null
+                );
+                const selectedPengawas = pengawasUserOptions.find(
+                  (option) => option.value === selectedOption.value
+                );
+                setFieldValue(
+                  "nip_pengawas",
+                  selectedPengawas ? selectedPengawas.nip : ""
+                );
+              }}
               size="Medium"
               errorMessage="Nama Pengawas tidak boleh kosong"
             />
@@ -318,10 +359,10 @@ export default function survei_kuesioner() {
               label="NIP Pengawas"
               labelPosition="left"
               placeholder="Masukkan NIP Pengawas"
-              // isRequired={true}
+              disabledActive={true}
               size="Medium"
               errorMessage="NIP pengawas tidak boleh kosong"
-              // value={values.nip_pengawas || ""}
+              value={values.nip_pengawas || ""}
               onChange={(e) => setFieldValue("nip_pengawas", e.target.value)}
             />
             <div
@@ -329,7 +370,8 @@ export default function survei_kuesioner() {
                 display: "flex",
                 alignItems: "center",
                 gap: "256px",
-              }}>
+              }}
+            >
               <div className="text-B2" style={{ minWidth: "200px" }}>
                 Tanggal Pengawasan
               </div>
@@ -473,7 +515,8 @@ export default function survei_kuesioner() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}>
+                          }`}
+                        >
                           <td className="px-3 py-6 text-sm text-center">
                             {(currentPage - 1) * itemsPerPage + index + 1}
                           </td>
@@ -529,7 +572,8 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.satuan_setempat_panjang`}>
+                              name={`material.${index}.satuan_setempat_panjang`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -552,7 +596,8 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.satuan_setempat_lebar`}>
+                              name={`material.${index}.satuan_setempat_lebar`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -575,7 +620,8 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.satuan_setempat_tinggi`}>
+                              name={`material.${index}.satuan_setempat_tinggi`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -598,7 +644,8 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.konversi_satuan_setempat`}>
+                              name={`material.${index}.konversi_satuan_setempat`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -621,7 +668,8 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.harga_satuan_setempat`}>
+                              name={`material.${index}.harga_satuan_setempat`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -644,7 +692,8 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.harga_konversi_satuan_setempat`}>
+                              name={`material.${index}.harga_konversi_satuan_setempat`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -813,7 +862,8 @@ export default function survei_kuesioner() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}>
+                          }`}
+                        >
                           <td className="px-3 py-6 text-sm text-center">
                             {(currentPage - 1) * itemsPerPage + index + 1}
                           </td>
@@ -864,7 +914,8 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`peralatan.${index}.harga_sewa_satuan_setempat`}>
+                              name={`peralatan.${index}.harga_sewa_satuan_setempat`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -887,7 +938,8 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`peralatan.${index}.harga_sewa_konversi`}>
+                              name={`peralatan.${index}.harga_sewa_konversi`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -1037,7 +1089,8 @@ export default function survei_kuesioner() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}>
+                          }`}
+                        >
                           <td className="px-3 py-6 text-sm text-center">
                             {(currentPage - 1) * itemsPerPage + index + 1}
                           </td>
@@ -1059,7 +1112,8 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`tenaga_kerja.${index}.harga_per_satuan_setempat`}>
+                              name={`tenaga_kerja.${index}.harga_per_satuan_setempat`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -1086,7 +1140,8 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`tenaga_kerja.${index}.harga_konversi_perjam`}>
+                              name={`tenaga_kerja.${index}.harga_konversi_perjam`}
+                            >
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -1255,7 +1310,8 @@ export default function survei_kuesioner() {
                 type="submit"
                 onClick={() => setCurrentAction("draft")}
                 name="action"
-                value="draft">
+                value="draft"
+              >
                 Simpan sebagai Draf
               </Button>
               <Button
@@ -1264,7 +1320,8 @@ export default function survei_kuesioner() {
                 type="submit"
                 onClick={() => setCurrentAction("save")}
                 name="action"
-                value="save">
+                value="save"
+              >
                 Simpan
               </Button>
             </div>
@@ -1299,7 +1356,8 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                 selectedValue === tabIndex
                   ? "bg-custom-blue-500 text-emphasis-on_color-high"
                   : "text-emphasis-on_surface-medium hover:bg-surface-light-overlay"
-              }`}>
+              }`}
+            >
               {item}
             </button>
           ))}
@@ -1314,9 +1372,8 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                   ? "bg-custom-blue-500 text-white"
                   : "bg-gray-200 text-gray-800"
               } px-4 py-2 rounded-lg`}
-              onClick={
-                button.onClick || (() => console.log("Button clicked!"))
-              }>
+              onClick={button.onClick || (() => console.log("Button clicked!"))}
+            >
               {button.label || "Button"}
             </button>
           )}

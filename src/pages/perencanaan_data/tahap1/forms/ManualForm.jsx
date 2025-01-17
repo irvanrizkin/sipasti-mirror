@@ -65,22 +65,35 @@ const ManualForm = ({
                 )}
               </Field>
               <Field name="namaBalai" type="dropdown">
-                {({ field, form }) => (
-                  <div className="flex flex-row items-center space-x-4">
-                    <DropdownAPI
-                      {...field}
-                      label="Nama Balai"
-                      labelPosition="left"
-                      placeholder="Pilih Nama Balai"
-                      size="Medium"
-                      isRequired="true"
-                      errorMessage="Nama Balai tidak boleh kosong"
-                      options={balaiOptions}
-                      value={field.value}
-                      onChange={(e) => form.setFieldValue(field.name, e)}
-                    />
-                  </div>
-                )}
+                {({ field, form }) => {
+                  return (
+                    <div className="flex flex-row items-center space-x-4">
+                      <label
+                        className={`text-B2 text-emphasis-on_surface-high h-8 min-w-[430px] mr-2 flex items-center`}
+                        style={{ whiteSpace: "nowrap" }}
+                      >
+                        Nama Balai
+                        <span className="text-custom-red-500 ml-1">*</span>
+                      </label>
+                      <DropdownAPI
+                        {...field}
+                        label="Nama Balai"
+                        labelPosition="left"
+                        placeholder="Pilih Nama Balai"
+                        size="Medium"
+                        isRequired="true"
+                        errorMessage="Nama Balai tidak boleh kosong"
+                        options={balaiOptions}
+                        value={
+                          Object.keys(field?.value ?? {}).length === 0
+                            ? null
+                            : field.value
+                        }
+                        onChange={(e) => form.setFieldValue(field.name, e)}
+                      />
+                    </div>
+                  );
+                }}
               </Field>
               <Field name="namaPaket" type="input">
                 {({ field, form }) => (

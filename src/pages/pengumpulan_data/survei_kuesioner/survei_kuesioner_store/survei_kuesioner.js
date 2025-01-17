@@ -3,11 +3,13 @@ import axios from "axios";
 
 const survei_kuesionerStore = create((set) => ({
   selectedValue: 0,
-  userOptions: [],
+  petugasLapanganuserOptions: [],
   pengawasUserOptions: [],
   initialValues: {
     user_id_petugas_lapangan: "",
     user_id_pengawas: "",
+    nip_petugas_lapangan: "",
+    nip_pengawas: "",
     nama_pemberi_informasi: "",
     data_vendor_id: "",
     identifikasi_kebutuhan_id: "",
@@ -49,17 +51,18 @@ const survei_kuesionerStore = create((set) => ({
       console.error("Error fetching data:", error);
     }
   },
-  fetchUserOptions: async () => {
+  fetchPetugasLapanganUserOptions: async () => {
     try {
       const response = await axios.get(
-        "http://api-ecatalogue-staging.online/api/pengumpulan-data/list-user?role=Petugas Lapangan"
+        "https://api-ecatalogue-staging.online/api/pengumpulan-data/list-user?role=Petugas%20Lapangan"
       );
       const options =
         response.data?.data.map((user) => ({
           value: user.user_id,
           label: user.nama_lengkap,
+          nip: user.nip,
         })) || [];
-      set({ userOptions: options });
+      set({ petugasLapanganuserOptions: options });
       console.log("User options berhasil diambil:", options);
     } catch (error) {
       console.error(
@@ -75,9 +78,9 @@ const survei_kuesionerStore = create((set) => ({
       );
       const options =
         response.data?.data.map((user) => ({
-          value: user.pengawas_id,
+          value: user.user_id,
           label: user.nama_lengkap,
-          nrp: user.nrp,
+          nip: user.nip,
         })) || [];
       set({ pengawasUserOptions: options });
       console.log("User options berhasil diambil:", options);
