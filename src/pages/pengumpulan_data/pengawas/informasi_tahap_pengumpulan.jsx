@@ -14,6 +14,7 @@ import Button from "../../../components/button";
 export default function informasi_tahap_pengumpulan() {
   const [activeVendorMenu, setActiveVendorMenu] = useState(null);
   const [activeFilters, setActiveFilters] = useState({});
+  const [dateExpired, setDateExpired] = useState(null);
   const { vendor = [] } = informasi_tahap_pengumpulanStore(
     (state) => state.initialValues
   );
@@ -99,6 +100,32 @@ export default function informasi_tahap_pengumpulan() {
       tenDaysFromNow.setDate(tenDaysFromNow.getDate() + 10);
       return tenDaysFromNow;
     }, []);
+
+    useEffect(() => {
+      const getLinkAndDate = async () => {
+        try {
+          console.log("Fetching data..."); // Debug #1
+          const response = await fetchGenerateLink("shortlist_id_example");
+          console.log("API Response:", response); // Debug #2
+
+          if (response) {
+            console.log("Date Expired:", response.dateExpired); // Debug #3
+            setDateExpired(response.dateExpired);
+            console.log("State di-update ke:", response.dateExpired); // Simpen langsung string
+          } else {
+            console.warn("Response kosong atau invalid");
+          }
+        } catch (error) {
+          console.error("Error saat fetch data:", error);
+        }
+      };
+
+      getLinkAndDate();
+    }, []);
+
+    useEffect(() => {
+      console.log("State berubah:", dateExpired);
+    }, [dateExpired]);
 
     useEffect(() => {
       const timer = setInterval(() => {
@@ -571,8 +598,12 @@ export default function informasi_tahap_pengumpulan() {
           </div>
           {/* Timestamp and Countdown Timer Section */}
           <div className="text-small text-custom-red-500 mt-2">
-            <div>Terakhir diperbarui: {new Date().toLocaleString()}</div>
-            <CountdownTimer />
+            <div>
+              {console.log("Rendering dengan dateExpired:", dateExpired)}
+              {dateExpired
+                ? `Link berlaku hingga: ${dateExpired}`
+                : "Sedang memuat tanggal expired..."}
+            </div>
           </div>
           <div className="flex justify-end gap-4">
             <Button

@@ -73,11 +73,11 @@ const informasi_tahap_pengumpulanStore = create((set) => ({
         `https://api-ecatalogue-staging.online/api/pengumpulan-data/generate-link/${shortlist_id}`
       );
 
-      const responseData = response.data; // Langsung dapetin response utuh
+      const responseData = response.data;
       if (responseData.status === "success" && responseData.data?.token) {
         const dateExpired = responseData.data.date_expired; // Ambil date expired
         console.log("Date Expired:", dateExpired); // Debugging kalau perlu
-        return responseData.data.token; // Tetap return token aja
+        return responseData.data.token;
       } else {
         console.error(
           "Gagal mendapatkan data:",
