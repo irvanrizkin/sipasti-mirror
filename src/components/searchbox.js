@@ -9,6 +9,7 @@ const SearchBox = ({
   withFilter = false,
   onFilterClick,
   filterOptions = [],
+  onApplyFilters, // NEW prop
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -32,6 +33,13 @@ const SearchBox = ({
     if (onFilterClick) {
       onFilterClick(updatedFilters);
     }
+  };
+
+  const applyFilters = () => {
+    if (onApplyFilters) {
+      onApplyFilters(selectedFilters); // Trigger the function with selected filters
+    }
+    setIsFilterOpen(false); // Close the dropdown
   };
 
   return (
@@ -58,7 +66,8 @@ const SearchBox = ({
         <div className="relative">
           <button
             onClick={toggleFilterDropdown}
-            className="flex items-center justify-center gap-2 px-4 py-2 h-[46px] w-[119px] text-Medium border-2 border-gray-300 text-emphasis-on_surface-medium rounded-[16px]   focus:outline-none focus:ring-2 focus:ring-custom-blue-500">
+            className="flex items-center justify-center gap-2 px-4 py-2 h-[46px] w-[119px] text-Medium border-2 border-gray-300 text-emphasis-on_surface-medium rounded-[16px] focus:outline-none focus:ring-2 focus:ring-custom-blue-500"
+          >
             <Filter size="20" color={colors.Emphasis.Light.On_Surface.Medium} />
             <span className="text-Small font-medium">Filter</span>
           </button>
@@ -71,14 +80,16 @@ const SearchBox = ({
                 boxShadow: "0px 4px 16px rgba(0, 0, 0, 0.1)",
                 maxHeight: "316px",
                 overflowY: "auto",
-              }}>
+              }}
+            >
               <h4 className="text-small text-emphasis-on_surface-medium mb-3">
                 Pilih Filter
               </h4>
               {selectedFilters.map((option, index) => (
                 <div
                   key={index}
-                  className="flex items-center mb-3 last:mb-0 p-2 rounded-[8px] hover:bg-custom-blue-100 hover:text-custom-blue-700 cursor-pointer transition-colors duration-200">
+                  className="flex items-center mb-3 last:mb-0 p-2 rounded-[8px] hover:bg-custom-blue-100 hover:text-custom-blue-700 cursor-pointer transition-colors duration-200"
+                >
                   <Checkbox
                     label={option.label}
                     checked={option.checked}
@@ -89,11 +100,12 @@ const SearchBox = ({
                   />
                 </div>
               ))}
-              {/* <button
-                onClick={() => setIsFilterOpen(false)}
-                className="mt-4 w-full bg-custom-blue-500 text-white py-2 px-4 rounded-[8px] hover:bg-custom-blue-600 transition-colors duration-200">
+              <button
+                onClick={applyFilters}
+                className="mt-4 w-full bg-custom-blue-500 text-white py-2 px-4 rounded-[8px] hover:bg-custom-blue-600 transition-colors duration-200"
+              >
                 Terapkan
-              </button> */}
+              </button>
             </div>
           )}
         </div>
