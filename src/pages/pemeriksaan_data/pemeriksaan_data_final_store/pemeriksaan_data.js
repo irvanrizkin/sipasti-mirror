@@ -15,81 +15,86 @@ export const pemeriksaan_dataStore = create((set) => ({
 
   setSelectedValue: (value) => set({ selectedValue: value }),
 
-//   fetchPemeriksaanData: async (id) => {
-//     try {
-//       const response = await axios.get(
-// `https://api-ecatalogue-staging.online/api/pemeriksaan-rekonsiliasi/get-data-pemeriksaan-rekonsiliasi/${id}`
-//       );
-  
-//       const data = response.data?.data; // Tambahkan optional chaining untuk keamanan
-  
-//       if (!data) {
-//         console.error("Data tidak ditemukan dalam respons API.");
-//         return;
-//       }
-  
-//       set((state) => ({
-//         dataEntri: data,
-//         material: data.material || [],
-//         peralatan: data.peralatan || [],
-//         tenaga_kerja: data.tenaga_kerja || [],
-//         initialValues: {
-//           ...state.initialValues,
-//           data_vendor_id: data.data_vendor_id || "",
-//           identifikasi_kebutuhan_id: data.identifikasi_kebutuhan_id || "",
-//         },
-//         data_vendor_id: data.data_vendor_id || "",
-//         identifikasi_kebutuhan_id: data.identifikasi_kebutuhan_id || "",
-//       }));
-  
-//       console.log("identifikasi_kebutuhan_id:", data.identifikasi_kebutuhan_id);
-//       console.log("data_vendor_id:", data.data_vendor_id);
-//     } catch (error) {
-//       console.error("Error fetching data:", error.message || error);
-//     }
-//   },  
+  //   fetchPemeriksaanData: async (id) => {
+  //     try {
+  //       const response = await axios.get(
+  // `https://api-ecatalogue-staging.online/api/pemeriksaan-rekonsiliasi/get-data-pemeriksaan-rekonsiliasi/${id}`
+  //       );
 
+  //       const data = response.data?.data; // Tambahkan optional chaining untuk keamanan
 
-fetchPemeriksaanData: async (id) => {
-  try {
-    const response = await axios.get(
-      `https://api-ecatalogue-staging.online/api/pemeriksaan-rekonsiliasi/get-data-pemeriksaan-rekonsiliasi/${id}`
-    );
-    const pemeriksaanData = response.data?.data?.pemeriksaan_data || [];
-    const data = response.data?.data;
+  //       if (!data) {
+  //         console.error("Data tidak ditemukan dalam respons API.");
+  //         return;
+  //       }
 
-    const updatedData = pemeriksaanData.map((item) => ({
-      ...item,
-      status_pemeriksaan: item.status_pemeriksaan || "Memenuhi",
-    }));
+  //       set((state) => ({
+  //         dataEntri: data,
+  //         material: data.material || [],
+  //         peralatan: data.peralatan || [],
+  //         tenaga_kerja: data.tenaga_kerja || [],
+  //         initialValues: {
+  //           ...state.initialValues,
+  //           data_vendor_id: data.data_vendor_id || "",
+  //           identifikasi_kebutuhan_id: data.identifikasi_kebutuhan_id || "",
+  //         },
+  //         data_vendor_id: data.data_vendor_id || "",
+  //         identifikasi_kebutuhan_id: data.identifikasi_kebutuhan_id || "",
+  //       }));
 
-    set({
-      pemeriksaanData:
-        updatedData.length === 1 ? [updatedData[0]] : updatedData,
-    });
+  //       console.log("identifikasi_kebutuhan_id:", data.identifikasi_kebutuhan_id);
+  //       console.log("data_vendor_id:", data.data_vendor_id);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error.message || error);
+  //     }
+  //   },
 
-    set((state) => ({
-      dataEntri: data,
-      material: data.material || [],
-      peralatan: data.peralatan || [],
-      tenaga_kerja: data.tenaga_kerja || [],
-      initialValues: {
-        ...state.initialValues,
-        data_vendor_id: data.data_vendor_id || "",
-        identifikasi_kebutuhan_id: data.identifikasi_kebutuhan_id || "",
-      },
-      data_vendor_id: data.data_vendor_id || "",
-      identifikasi_kebutuhan_id: data.identifikasi_kebutuhan_id || "",
-    }));
-  } catch (error) {
-    console.error("Failed to fetch pemeriksaan_data:", {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
-    });
-  }
-},
+  fetchPemeriksaanData: async (id) => {
+    try {
+      const response = await axios.get(
+        `https://api-ecatalogue-staging.online/api/pemeriksaan-rekonsiliasi/get-data-pemeriksaan-rekonsiliasi/${id}`
+      );
+      const mainData = response.data?.data?.data; // Akses ke data utama
+      const pemeriksaanData = response.data?.data?.pemeriksaan_data || [];
 
+      const updatedData = pemeriksaanData.map((item) => ({
+        ...item,
+        status_pemeriksaan: item.status_pemeriksaan || "Memenuhi",
+      }));
+
+      set({
+        pemeriksaanData:
+          updatedData.length === 1 ? [updatedData[0]] : updatedData,
+      });
+
+      set((state) => ({
+        dataEntri: mainData,
+        material: mainData.material || [],
+        peralatan: mainData.peralatan || [],
+        tenaga_kerja: mainData.tenaga_kerja || [],
+        initialValues: {
+          ...state.initialValues,
+          data_vendor_id: mainData.data_vendor_id || "",
+          identifikasi_kebutuhan_id: mainData.identifikasi_kebutuhan_id || "",
+        },
+        data_vendor_id: mainData.data_vendor_id || "",
+        identifikasi_kebutuhan_id: mainData.identifikasi_kebutuhan_id || "",
+      }));
+
+      // Tambahkan log untuk memastikan data masuk
+      console.log("Cek data_vendor_id:", mainData.data_vendor_id);
+      console.log(
+        "Cek identifikasi_kebutuhan_id:",
+        mainData.identifikasi_kebutuhan_id
+      );
+    } catch (error) {
+      console.error("Failed to fetch pemeriksaan_data:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+    }
+  },
 
   userRole: "tim teknis",
   dataStatic: [

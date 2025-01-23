@@ -80,13 +80,24 @@ function App() {
     updateStatus(id_pemeriksaan, status);
   };
 
-  const isSubmitDisabled = data.some(
-    (item) => item.status_pemeriksaan === null
-  );
+  const isSubmitDisabled = ["C1", "C2", "C3", "C4"].some((id) => {
+    const item = data.find((d) => d.id_pemeriksaan === id);
+    return !item || item.status_pemeriksaan === null;
+  });
+
+  const isD1D2Disabled = !["C1", "C2", "C3", "C4"].every((id) => {
+    const item = data.find((d) => d.id_pemeriksaan === id);
+    return item && item.status_pemeriksaan === "memenuhi";
+  });
 
   const filteredData = pemeriksaanData.filter((item) =>
     ["A1", "A2", "A3", "A4", "A5", "B1", "B2"].includes(item.item_number)
   );
+
+  const isD1D2Complete = ["D1", "D2"].every((id) => {
+    const item = data.find((d) => d.id_pemeriksaan === id);
+    return item && item.status_pemeriksaan !== null;
+  });
 
   const combinedData = dataStatic.map((item) => {
     const apiData =
@@ -242,8 +253,7 @@ function App() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}
-                        >
+                          }`}>
                           <td className="px-3 py-4 text-sm text-center">
                             {item.nomor}
                           </td>
@@ -282,8 +292,7 @@ function App() {
                       <tr>
                         <td
                           colSpan={5}
-                          style={{ textAlign: "center", padding: "10px" }}
-                        >
+                          style={{ textAlign: "center", padding: "10px" }}>
                           Tidak ada data
                         </td>
                       </tr>
@@ -329,8 +338,7 @@ function App() {
                           index % 2 === 0
                             ? "bg-custom-neutral-0"
                             : "bg-custom-neutral-100"
-                        }`}
-                      >
+                        }`}>
                         <td className="px-3 py-4 text-sm text-center">
                           {item.nomor}
                         </td>
@@ -353,6 +361,11 @@ function App() {
                             <td className="px-3 py-4 text-sm text-center">
                               <input
                                 type="radio"
+                                disabled={
+                                  (item.id_pemeriksaan === "D1" ||
+                                    item.id_pemeriksaan === "D2") &&
+                                  isD1D2Disabled
+                                } // D1 & D2 disabled kalau C1-C4 belum lengkap atau ada "tidak memenuhi"
                                 id={`status-${item.id_pemeriksaan}-memenuhi`}
                                 name={`status-${item.id_pemeriksaan}`}
                                 value="memenuhi"
@@ -366,6 +379,11 @@ function App() {
                             <td className="px-3 py-4 text-sm text-center">
                               <input
                                 type="radio"
+                                disabled={
+                                  (item.id_pemeriksaan === "D1" ||
+                                    item.id_pemeriksaan === "D2") &&
+                                  isD1D2Disabled
+                                } // Sama logic kayak di atas
                                 id={`status-${item.id_pemeriksaan}-tidak memenuhi`}
                                 name={`status-${item.id_pemeriksaan}`}
                                 value="tidak memenuhi"
@@ -389,36 +407,39 @@ function App() {
                 </table>
               </div>
             </div>
-            <h4 className="text-H4 text-emphasis-on_surface-high mt-6 mb-3 ">
-              Unggah Berita Acara Penetapan Harga / Berita Acara Penetapan Harga
-              Hasil Rekonsiliasi
-            </h4>
-            <FileInput
-              onFileSelect={(files) => {
-                handleBeritaAcara(files);
-                setFieldValue("beritaAcara", files[0]);
-              }}
-              setSelectedFile={setBerita_Acara}
-              buttonText="Pilih Berkas"
-              multiple={false}
-              accept=".pdf"
-              // Label="Unggah Berita Acara"
-              HelxperText="Format .PDF dan maksimal 2MB"
-              state={beritaacarastate}
-              onCancel={() => {
-                handleCancelBeritaAcara();
-                setFieldValue("beritaAcara", null);
-              }}
-              selectedFile={selectedberitaacara}
-              maxSizeMB={2}
-            />
+            {isD1D2Complete && (
+              <>
+                <h4 className="text-H4 text-emphasis-on_surface-high mt-6 mb-3 ">
+                  Unggah Berita Acara Penetapan Harga / Berita Acara Penetapan
+                  Harga Hasil Rekonsiliasi
+                </h4>
+                <FileInput
+                  onFileSelect={(files) => {
+                    handleBeritaAcara(files);
+                    setFieldValue("beritaAcara", files[0]);
+                  }}
+                  setSelectedFile={setBerita_Acara}
+                  buttonText="Pilih Berkas"
+                  multiple={false}
+                  accept=".pdf"
+                  HelxperText="Format .PDF dan maksimal 2MB"
+                  state={beritaacarastate}
+                  onCancel={() => {
+                    handleCancelBeritaAcara();
+                    setFieldValue("beritaAcara", null);
+                  }}
+                  selectedFile={selectedberitaacara}
+                  maxSizeMB={2}
+                />
+              </>
+            )}
+
             <div className="flex flex-row justify-end items-right space-x-4 mt-3 bg-neutral-100 px-6 py-8 rounded-[16px]">
               <Button
                 variant="solid_blue"
                 size="Medium"
                 type="submit"
-                disabled={isSubmitDisabled}
-              >
+                disabled={isSubmitDisabled}>
                 Simpan
               </Button>
             </div>
@@ -438,48 +459,3 @@ function App() {
 }
 
 export default App;
-
-const Tabs = ({ index, items, onChange, selectedValue, button }) => {
-  const handleClick = (tabIndex) => {
-    onChange(tabIndex);
-  };
-
-  return (
-    <div>
-      <div className="flex justify-between">
-        <div className="inline-flex space-x-2 bg-custom-neutral-100 rounded-[16px] p-2 h-[60px]">
-          {items.map((item, tabIndex) => (
-            <button
-              type="button"
-              key={tabIndex}
-              onClick={() => handleClick(tabIndex)}
-              className={`px-4 py-3 text-Small rounded-[12px] transition-all duration-300 cursor-pointer whitespace-nowrap ${
-                selectedValue === tabIndex
-                  ? "bg-custom-blue-500 text-emphasis-on_color-high"
-                  : "text-emphasis-on_surface-medium hover:bg-surface-light-overlay"
-              }`}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center space-x-3">
-          {button && (
-            <button
-              type="button"
-              className={`${
-                button.variant === "solid_blue"
-                  ? "bg-custom-blue-500 text-white"
-                  : "bg-gray-200 text-gray-800"
-              } px-4 py-2 rounded-lg`}
-              onClick={button.onClick || (() => console.log("Button clicked!"))}
-            >
-              {button.label || "Button"}
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
