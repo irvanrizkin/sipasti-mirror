@@ -7,27 +7,30 @@ import Button from "../../components/button";
 import Dropdown from "../../components/dropdown";
 import axios from "axios";
 import CustomAlert from "../../components/alert";
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api'
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 // import { Console } from "console";
 
 const containerStyle = {
-  width: '100%',
-  height: '400px',
-  borderRadius: '16px',
-  overflow: 'hidden',
-}
+  width: "100%",
+  height: "400px",
+  borderRadius: "16px",
+  overflow: "hidden",
+};
 
 const center = {
   lat: -6.236307766247564,
-  lng: 106.80058533427567, 
+  lng: 106.80058533427567,
 };
 const InputVendor = ({ onNext, onBack, onClose }) => {
   const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: 'AIzaSyB8rzsPylVTp7WFWmXxXvWOpVCIhVdySCo',
-  })
-  const [map, setMap] = React.useState(null)
-  const [markerPosition, setMarkerPosition] = useState(center); 
+    id: "google-map-script",
+    googleMapsApiKey: "AIzaSyB8rzsPylVTp7WFWmXxXvWOpVCIhVdySCo",
+    libraries: ["places"],
+  });
+  const [map, setMap] = React.useState(null);
+  const [markerPosition, setMarkerPosition] = useState(center);
+  const [searchValue, setSearchValue] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [nama_vendor, setnama_vendor] = useState("");
   const [jenis_vendor_id, setjenis_vendor_id] = useState("");
@@ -66,6 +69,45 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
     setMap(null);
   }, []);
 
+  const handleSearchChange = (e) => {
+    const input = e.target.value;
+    setSearchValue(input);
+
+    if (input && input.trim() !== "") {
+      const service = new window.google.maps.places.AutocompleteService();
+
+      service.getPlacePredictions(
+        { input, types: ["geocode"] },
+        (predictions, status) => {
+          if (status === "OK" && predictions) {
+            setSuggestions(predictions);
+          } else {
+            setSuggestions([]);
+          }
+        }
+      );
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSuggestionClick = (placeId) => {
+    const service = new window.google.maps.places.PlacesService(map);
+
+    service.getDetails({ placeId }, (place, status) => {
+      if (status === "OK" && place.geometry) {
+        const location = place.geometry.location;
+        const lat = location.lat();
+        const lng = location.lng();
+        setMarkerPosition({ lat, lng });
+        map.panTo(location);
+        map.setZoom(14); // Zoom ke lokasi hasil pencarian
+        setSearchValue(place.formatted_address); // Update input dengan alamat yang dipilih
+        setSuggestions([]);
+      }
+    });
+  };
+
   const handleInputChange = (newValues) => {
     setInputValues(newValues);
   };
@@ -97,6 +139,12 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
         return prev + 10;
       });
     }, 200);
+  };
+
+  const onMapClick = (event) => {
+    const lat = event.latLng.lat();
+    const lng = event.latLng.lng();
+    setMarkerPosition({ lat, lng });
   };
 
   const handleDokPendukungFileSelect = (files) => {
@@ -299,8 +347,6 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
     }
   };
 
-
-  
   // .then((response) => {
   //   if (!response.ok) {
   //     throw new Error("Gagal menyimpan data. Silakan coba lagi.");
@@ -405,13 +451,32 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
     setkota_id(selectedOption ? selectedOption.value : "");
   };
 
+  const handleKoordinatChange = (e) => {
+    const value = e.target.value;
+    setkoordinat(value);
+
+    // Pisah koordinat latitude dan longitude
+    const [lat, lng] = value.split(",").map(Number);
+
+    // Validasi apakah koordinat valid
+    if (!isNaN(lat) && !isNaN(lng)) {
+      setMarkerPosition({ lat, lng });
+      map.panTo({ lat, lng });
+      map.setZoom(14); // Zoom ke lokasi baru
+    } else {
+      console.error("Koordinat tidak valid.");
+    }
+  };
+
   return isLoaded ? (
     <>
       <div className="p-8">
         <Navbar />
         <div className="p-6">
-          <h3 className="text-H3 text-emphasis-on_surface-high">Input Data Vendor</h3>
-  
+          <h3 className="text-H3 text-emphasis-on_surface-high">
+            Input Data Vendor
+          </h3>
+
           <div className="flex flex-wrap gap-4 mt-3">
             <div className="flex-grow grid grid-cols-1 gap-4 py-8 px-6 rounded-[16px] bg-custom-neutral-100">
               <TextInput
@@ -423,7 +488,7 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
                 value={nama_vendor}
                 onChange={(e) => setnama_vendor(e.target.value)}
               />
-  
+
               <div className="space-b-1">
                 <p className="text-B2">Jenis Responden/ Vendor</p>
                 <div className="flex space-x-8">
@@ -444,17 +509,19 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
                   />
                 </div>
               </div>
-  
+
               <Dropdown
                 options={getOptions()}
                 label="Kategori Vendor/Perusahaan"
                 placeholder="Pilih kategori vendor/perusahaan"
                 errorMessage="Kategori tidak boleh kosong."
                 value={kategori_vendor_id}
-                onSelect={(selectedOption) => setkategori_vendor_id(selectedOption.value)}
+                onSelect={(selectedOption) =>
+                  setkategori_vendor_id(selectedOption.value)
+                }
                 isRequired={true}
               />
-  
+
               <TextInput
                 label="Sumber daya yang dimiliki"
                 placeholder="Masukkan sumber daya"
@@ -465,7 +532,7 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
                 value={sumber_daya}
                 onChange={(e) => setsumber_daya(e.target.value)}
               />
-  
+
               <TextInput
                 label="Alamat vendor atau perusahaan"
                 placeholder="Masukkan alamat"
@@ -476,7 +543,7 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
                 value={alamat}
                 onChange={(e) => setalamat(e.target.value)}
               />
-  
+
               <div className="flex gap-8">
                 <TextInput
                   label="Nomor Telepon"
@@ -502,7 +569,7 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
                   className="flex-1"
                 />
               </div>
-  
+
               <TextInput
                 label="Nama PIC"
                 placeholder="Masukkan nama PIC"
@@ -513,14 +580,16 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
                 value={nama_pic}
                 onChange={(e) => setnama_pic(e.target.value)}
               />
-  
+
               <div className="flex gap-8">
                 <Dropdown
                   options={provinsiOptions}
                   label="Pilih Provinsi"
                   placeholder="Pilih Provinsi"
                   onSelect={handleProvinsiChange}
-                  value={provinsiOptions.find((option) => option.value === provinsi_id)}
+                  value={provinsiOptions.find(
+                    (option) => option.value === provinsi_id
+                  )}
                   isRequired
                   errorMessage="Provinsi harus dipilih"
                 />
@@ -535,27 +604,76 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
                 />
               </div>
             </div>
-  
-  
+
             <div className="flex-grow grid grid-cols-1 gap-4 py-8 px-6 rounded-[16px] bg-custom-neutral-100">
+              <div
+                style={{
+                  marginBottom: "10px",
+                  position: "relative",
+                  borderRadius: "16px",
+                }}>
+                <input
+                  type="text"
+                  placeholder="Cari lokasi..."
+                  value={searchValue}
+                  onChange={handleSearchChange}
+                  style={{
+                    padding: "8px",
+                    borderRadius: "12px",
+                    border: "1px solid #ccc",
+                    width: "100%",
+                  }}
+                />
+                {/* Dropdown saran lokasi */}
+                {suggestions.length > 0 && (
+                  <ul
+                    style={{
+                      listStyle: "none",
+                      margin: 0,
+                      padding: "8px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                      backgroundColor: "#fff",
+                      position: "absolute",
+                      width: "100%",
+                      zIndex: 10,
+                      top: "40px",
+                    }}>
+                    {suggestions.map((suggestion) => (
+                      <li
+                        key={suggestion.place_id}
+                        onClick={() =>
+                          handleSuggestionClick(suggestion.place_id)
+                        }
+                        style={{
+                          padding: "8px",
+                          cursor: "pointer",
+                          borderBottom: "1px solid #eee",
+                        }}>
+                        {suggestion.description}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               <div className="space-y-6">
-            <GoogleMap
-              Marker position={center}
-              mapContainerStyle={containerStyle}
-              center={center}
-              zoom={10}
-              onLoad={onLoad}
-              onUnmount={onUnmount}
-              onClick={handleMapClick}
-            >
-                        <Marker position={markerPosition} />
-            </GoogleMap>
+                <GoogleMap
+                  Marker
+                  position={center}
+                  mapContainerStyle={containerStyle}
+                  center={center}
+                  zoom={10}
+                  onLoad={onLoad}
+                  onUnmount={onUnmount}
+                  onClick={handleMapClick}>
+                  <Marker position={markerPosition} />
+                </GoogleMap>
                 <TextInput
                   label="Koordinat"
                   placeholder="Masukkan Koordinat"
                   type="text"
                   value={koordinat}
-                  onChange={(e) => setkoordinat(e.target.value)}
+                  onChange={handleKoordinatChange}
                   state="border"
                 />
                 <FileInput
@@ -585,14 +703,24 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
                   maxSizeMB={2}
                 />
               </div>
-  
+
               <div className="flex flex-row justify-end items-right space-x-4 mt-3 bg-neutral-100 px-6 py-8 rounded-[16px]">
-                <Button label="Kembali" variant="secondary" size="md" onClick={onBack} />
-                <Button label="Simpan & Lanjut" variant="primary" size="md" onClick={onNext} />
+                <Button
+                  label="Kembali"
+                  variant="secondary"
+                  size="md"
+                  onClick={onBack}
+                />
+                <Button
+                  label="Simpan & Lanjut"
+                  variant="primary"
+                  size="md"
+                  onClick={onNext}
+                />
               </div>
             </div>
           </div>
-  
+
           <div className="flex flex-row justify-end items-right space-x-4 mt-3 bg-neutral-100 px-6 py-8 rounded-[16px]">
             <Button variant="outlined_yellow" size="Medium" onClick={onBack}>
               Kembali
@@ -602,7 +730,7 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
             </Button>
           </div>
         </div>
-  
+
         <CustomAlert
           message={alertMessage}
           severity={alertSeverity}
@@ -612,6 +740,6 @@ const InputVendor = ({ onNext, onBack, onClose }) => {
       </div>
     </>
   ) : null;
-}  
+};
 
 export default InputVendor;
