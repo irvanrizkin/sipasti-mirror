@@ -45,13 +45,6 @@ export default function informasi_tahap_pemeriksaan() {
   const router = useRouter();
   const { id } = router.query;
 
-  // useEffect(() => {
-  //   if (id) {
-  //     console.log("shortlist_id yang dikirim:", id);
-  //     fetchDataEntriData(id);
-  //   }
-  // }, [id, fetchDataEntriData]);
-
   const handleFilterClick = (filters) => {
     const updatedFilters = { ...activeFilters };
     filters.forEach((filter) => {
@@ -272,8 +265,7 @@ export default function informasi_tahap_pemeriksaan() {
                       index % 2 === 0
                         ? "bg-custom-neutral-0"
                         : "bg-custom-neutral-100"
-                    }`}
-                  >
+                    }`}>
                     <td className="px-3 py-6 text-sm text-center">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
@@ -287,8 +279,7 @@ export default function informasi_tahap_pemeriksaan() {
                         <button
                           className={`w-[52px] h-[52px] rounded-full flex items-center justify-center transition-colors 
                           hover:bg-custom-blue-50 cursor-pointer`}
-                          onClick={(e) => handleToggleMenu(item.id, e)}
-                        >
+                          onClick={(e) => handleToggleMenu(item.id, e)}>
                           <More
                             size="24"
                             color={colors.Emphasis.Light.On_Surface.High}
@@ -354,8 +345,7 @@ export default function informasi_tahap_pemeriksaan() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}
-                        >
+                          }`}>
                           <td className="px-3 py-6 text-sm">
                             {item.nama_vendor}
                           </td>
@@ -369,8 +359,7 @@ export default function informasi_tahap_pemeriksaan() {
                             hover:bg-custom-blue-50 cursor-pointer`}
                               onClick={(e) =>
                                 handleToggleVendorMenu(item.shortlist_id, e)
-                              }
-                            >
+                              }>
                               <More
                                 size="24"
                                 color={colors.Emphasis.Light.On_Surface.High}
@@ -387,15 +376,13 @@ export default function informasi_tahap_pemeriksaan() {
                                   zIndex: 10000,
                                   boxShadow:
                                     "0px 4px 16px 0px rgba(165, 163, 174, 0.45)",
-                                }}
-                              >
+                                }}>
                                 <Link
                                   href="#"
                                   className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
                                   onClick={() =>
                                     handleLinkClick(item.shortlist_id)
-                                  }
-                                >
+                                  }>
                                   Lihat PDF Kuesioner
                                 </Link>
                                 <Link
@@ -410,8 +397,7 @@ export default function informasi_tahap_pemeriksaan() {
                                       item.shortlist_id
                                     );
                                   }}
-                                  className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
-                                >
+                                  className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200">
                                   Periksa Data
                                 </Link>
                               </div>
@@ -423,8 +409,7 @@ export default function informasi_tahap_pemeriksaan() {
                       <tr>
                         <td
                           className="px-3 py-6 text-B1 text-center text-emphasis-on_surface-medium"
-                          colSpan="4"
-                        >
+                          colSpan="4">
                           Tidak ada data tersedia
                         </td>
                       </tr>
@@ -477,8 +462,7 @@ export default function informasi_tahap_pemeriksaan() {
                   .catch(() => {
                     alert("Gagal menyalin link.");
                   });
-              }}
-            >
+              }}>
               <ClipboardText
                 size="24"
                 color={colors.Emphasis.Light.On_Surface.High}
@@ -489,8 +473,7 @@ export default function informasi_tahap_pemeriksaan() {
             <Button
               variant="solid_blue"
               size="Medium"
-              onClick={closeGenerateLinkModal}
-            >
+              onClick={closeGenerateLinkModal}>
               Tutup
             </Button>
           </div>
@@ -506,13 +489,11 @@ export default function informasi_tahap_pemeriksaan() {
             right: menuPosition.alignRight ? 0 : undefined,
             zIndex: 10000,
             boxShadow: "0px 4px 16px 0px rgba(165, 163, 174, 0.45)",
-          }}
-        >
+          }}>
           <Link
             href="#"
             className="block px-4 py-2 text-sm text-emphasis-on_surface-high hover:bg-custom-blue-50 rounded-[12px] transition-all duration-200"
-            onClick={() => openModal(activeMenu)}
-          >
+            onClick={() => openModal(activeMenu)}>
             Lihat Detail Kuesioner
           </Link>
         </div>

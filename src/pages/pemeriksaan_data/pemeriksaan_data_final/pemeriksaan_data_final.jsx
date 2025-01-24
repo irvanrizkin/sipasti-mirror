@@ -99,6 +99,12 @@ function App() {
     return item && item.status_pemeriksaan !== null;
   });
 
+  const hasNotMeetingCItem = data.some(
+    (c) =>
+      c.id_pemeriksaan.startsWith("C") &&
+      c.status_pemeriksaan === "tidak memenuhi"
+  );
+
   const combinedData = dataStatic.map((item) => {
     const apiData =
       filteredData.find(
@@ -120,17 +126,42 @@ function App() {
     try {
       const verifikasiValidasi = data
         .filter((item) => item.verified_by !== null)
-        .map((item) => ({
-          id_pemeriksaan: item.id_pemeriksaan,
-          status_pemeriksaan: item.status_pemeriksaan || "memenuhi",
-          verified_by: item.verified_by || "tim teknis",
-        }));
+        .filter((item) => {
+          // Check if any "C" item is "tidak memenuhi"
+          const hasNotMeetingCItem = data.some(
+            (c) =>
+              c.id_pemeriksaan.startsWith("C") &&
+              c.status_pemeriksaan === "tidak memenuhi"
+          );
+          if (hasNotMeetingCItem) {
+            // If any "C" item is "tidak memenuhi", remove items starting with "D"
+            return !item.id_pemeriksaan.startsWith("D");
+          }
+          return true;
+        })
+        .map((item) => {
+          return {
+            id_pemeriksaan: item.id_pemeriksaan,
+            status_pemeriksaan: item.status_pemeriksaan || "memenuhi",
+            verified_by: item.verified_by || "tim teknis",
+          };
+        });
 
       const payload = new FormData();
       payload.append("identifikasi_kebutuhan_id", identifikasi_kebutuhan_id);
       payload.append("data_vendor_id", data_vendor_id);
 
-      if (selectedberitaacara) {
+      const hasNotMeetingCItem = data.some(
+        (c) =>
+          c.id_pemeriksaan.startsWith("C") &&
+          c.status_pemeriksaan === "tidak memenuhi"
+      );
+      if (hasNotMeetingCItem) {
+        setselectedBeritaAcara(null);
+        setBeritaAcaraState("default");
+      }
+
+      if (!hasNotMeetingCItem && selectedberitaacara) {
         payload.append("berita_acara_validasi", selectedberitaacara);
       }
 
@@ -407,7 +438,7 @@ function App() {
                 </table>
               </div>
             </div>
-            {isD1D2Complete && (
+            {!hasNotMeetingCItem && isD1D2Complete && (
               <>
                 <h4 className="text-H4 text-emphasis-on_surface-high mt-6 mb-3 ">
                   Unggah Berita Acara Penetapan Harga / Berita Acara Penetapan

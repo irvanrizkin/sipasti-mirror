@@ -128,10 +128,8 @@ export default function survei_kuesioner() {
     try {
       const payload = {
         type_save: currentAction === "draft" ? "draft" : "final",
-        // user_id_petugas_lapangan: values.user_id_petugas_lapangan,
-        // user_id_pengawas: values.user_id_pengawas,
-        user_id_pengawas: 1,
-        user_id_petugas_lapangan: 1,
+        user_id_petugas_lapangan: values.user_id_petugas_lapangan,
+        user_id_pengawas: values.user_id_pengawas,
         nama_pemberi_informasi: values.nama_pemberi_informasi,
         identifikasi_kebutuhan_id,
         tanggal_survei: values.tanggal_survei,
@@ -172,9 +170,9 @@ export default function survei_kuesioner() {
         });
 
         if (currentAction !== "draft") {
-          setTimeout(() => {
-            window.location.reload(); // Reload jika status sukses
-          }, 2000);
+          // setTimeout(() => {
+          //   window.location.reload();
+          // }, 2000);
         }
       } else {
         // Jika response status bukan "success", tampilkan pesan error dan tetap di halaman
@@ -296,8 +294,7 @@ export default function survei_kuesioner() {
                 display: "flex",
                 alignItems: "center",
                 gap: "256px",
-              }}
-            >
+              }}>
               <div className="text-B2" style={{ minWidth: "200px" }}>
                 Tanggal Survei
               </div>
@@ -370,8 +367,7 @@ export default function survei_kuesioner() {
                 display: "flex",
                 alignItems: "center",
                 gap: "256px",
-              }}
-            >
+              }}>
               <div className="text-B2" style={{ minWidth: "200px" }}>
                 Tanggal Pengawasan
               </div>
@@ -515,8 +511,7 @@ export default function survei_kuesioner() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}
-                        >
+                          }`}>
                           <td className="px-3 py-6 text-sm text-center">
                             {(currentPage - 1) * itemsPerPage + index + 1}
                           </td>
@@ -572,8 +567,7 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.satuan_setempat_panjang`}
-                            >
+                              name={`material.${index}.satuan_setempat_panjang`}>
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -596,8 +590,7 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.satuan_setempat_lebar`}
-                            >
+                              name={`material.${index}.satuan_setempat_lebar`}>
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -620,8 +613,7 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.satuan_setempat_tinggi`}
-                            >
+                              name={`material.${index}.satuan_setempat_tinggi`}>
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -644,8 +636,7 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.konversi_satuan_setempat`}
-                            >
+                              name={`material.${index}.konversi_satuan_setempat`}>
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -668,8 +659,7 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.harga_satuan_setempat`}
-                            >
+                              name={`material.${index}.harga_satuan_setempat`}>
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -692,8 +682,7 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`material.${index}.harga_konversi_satuan_setempat`}
-                            >
+                              name={`material.${index}.harga_konversi_satuan_setempat`}>
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -862,8 +851,7 @@ export default function survei_kuesioner() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}
-                        >
+                          }`}>
                           <td className="px-3 py-6 text-sm text-center">
                             {(currentPage - 1) * itemsPerPage + index + 1}
                           </td>
@@ -914,8 +902,7 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`peralatan.${index}.harga_sewa_satuan_setempat`}
-                            >
+                              name={`peralatan.${index}.harga_sewa_satuan_setempat`}>
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -938,8 +925,7 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`peralatan.${index}.harga_sewa_konversi`}
-                            >
+                              name={`peralatan.${index}.harga_sewa_konversi`}>
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -1089,8 +1075,7 @@ export default function survei_kuesioner() {
                             index % 2 === 0
                               ? "bg-custom-neutral-0"
                               : "bg-custom-neutral-100"
-                          }`}
-                        >
+                          }`}>
                           <td className="px-3 py-6 text-sm text-center">
                             {(currentPage - 1) * itemsPerPage + index + 1}
                           </td>
@@ -1112,8 +1097,7 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`tenaga_kerja.${index}.harga_per_satuan_setempat`}
-                            >
+                              name={`tenaga_kerja.${index}.harga_per_satuan_setempat`}>
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -1140,8 +1124,7 @@ export default function survei_kuesioner() {
                           </td>
                           <td className="px-3 py-6">
                             <Field
-                              name={`tenaga_kerja.${index}.harga_konversi_perjam`}
-                            >
+                              name={`tenaga_kerja.${index}.harga_konversi_perjam`}>
                               {({ field, form }) => (
                                 <TextInput
                                   value={field.value}
@@ -1310,8 +1293,7 @@ export default function survei_kuesioner() {
                 type="submit"
                 onClick={() => setCurrentAction("draft")}
                 name="action"
-                value="draft"
-              >
+                value="draft">
                 Simpan sebagai Draf
               </Button>
               <Button
@@ -1320,8 +1302,7 @@ export default function survei_kuesioner() {
                 type="submit"
                 onClick={() => setCurrentAction("save")}
                 name="action"
-                value="save"
-              >
+                value="save">
                 Simpan
               </Button>
             </div>
@@ -1356,8 +1337,7 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                 selectedValue === tabIndex
                   ? "bg-custom-blue-500 text-emphasis-on_color-high"
                   : "text-emphasis-on_surface-medium hover:bg-surface-light-overlay"
-              }`}
-            >
+              }`}>
               {item}
             </button>
           ))}
@@ -1372,8 +1352,9 @@ const Tabs = ({ index, items, onChange, selectedValue, button }) => {
                   ? "bg-custom-blue-500 text-white"
                   : "bg-gray-200 text-gray-800"
               } px-4 py-2 rounded-lg`}
-              onClick={button.onClick || (() => console.log("Button clicked!"))}
-            >
+              onClick={
+                button.onClick || (() => console.log("Button clicked!"))
+              }>
               {button.label || "Button"}
             </button>
           )}
