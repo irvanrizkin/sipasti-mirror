@@ -25,7 +25,7 @@ export const datadetail_store = create((set) => ({
   fetchUserOptions: async () => {
     try {
       const response = await axios.get(
-        "http://api-ecatalogue-staging.online/api/pengumpulan-data/list-user"
+        "https://api-ecatalogue-staging.online/api/pengumpulan-data/list-user?role=Petugas%20Lapangan"
       );
       const options =
         response.data?.data.map((user) => ({
