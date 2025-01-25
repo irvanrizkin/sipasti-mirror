@@ -65,6 +65,7 @@ const SearchBox = ({
       {withFilter && (
         <div className="relative">
           <button
+            type="button"
             onClick={toggleFilterDropdown}
             className="flex items-center justify-center gap-2 px-4 py-2 h-[46px] w-[119px] text-Medium border-2 border-gray-300 text-emphasis-on_surface-medium rounded-[16px] focus:outline-none focus:ring-2 focus:ring-custom-blue-500"
           >

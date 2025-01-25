@@ -369,7 +369,7 @@ const MaterialForm = ({
       checked: false,
     },
     { label: "Jumlah Kebutuhan", accessor: "merk", checked: false },
-    { label: "Provnisi", accessor: "provinsi", checked: false },
+    { label: "Provinsi", accessor: "provinsi", checked: false },
     { label: "Kota", accessor: "kota", checked: false },
   ];
 
@@ -802,7 +802,26 @@ const PeralatanForm = ({ values, setFieldValue, hide, provincesOptions }) => {
 
   const [peralatanQuerySearch, setPeralatanQuerySearch] = useState("");
 
-  const { setSelectedValue } = useStore();
+  // const filterOptions = [
+  //   { label: "Nama Material", accessor: "nama_material", checked: false },
+
+  const filterOptions = [
+    { label: "Nama Peralatan", accessor: "nama_peralatan", checked: false},
+    { label: "Spesifikasi", accessor: "spesifikasi", checked: false},
+    { label: "Kapasitas", accessor: "kapasitas", checked: false},
+    { label: "Kodefikasi", accessor: "kodefikasi", checked: false},
+    { label: "Kelompok Peralatan", accessor: "kelompok_peralatan", checked: false},
+    { label: "Jumlah Kebutuhan", accessor: "jumlah_kebutuhan", checked: false},
+    { label: "Merk", accessor: "merk", checked: false},
+    { label: "Provinsi", accessor: "provinsi", checked: false},
+    { label: "Kota", accessor: "kota", checked: false},
+  ]
+
+  const {
+    setSelectedValue,
+    peralatanFilters,
+    setPeralatanFilters,
+  } = useStore();
 
   const paginatedPeralatan = values.peralatans.slice(
     (currentPage - 1) * itemsPerPage,
@@ -829,6 +848,16 @@ const PeralatanForm = ({ values, setFieldValue, hide, provincesOptions }) => {
                     setPeralatanQuerySearch(e);
                   }}
                   withFilter={true}
+                  filterOptions={filterOptions}
+                  onFilterClick={(filters) => {
+                    let peralatanFilters = [];
+                    filters.forEach((filter) => {
+                      if (filter.checked) {
+                        peralatanFilters.push(filter.accessor);
+                      }
+                    });
+                    setPeralatanFilters(peralatanFilters);
+                  }}
                 />
                 <Button
                   variant="solid_blue"
@@ -889,23 +918,32 @@ const PeralatanForm = ({ values, setFieldValue, hide, provincesOptions }) => {
                     </tr>
                   </thead>
                   <tbody className="bg-surface-light-background">
-                    {paginatedPeralatan.map((_, index) => {
+                    {paginatedPeralatan.map((item, index) => {
                       const actualIndex =
                         (currentPage - 1) * itemsPerPage + index;
-                      if (peralatanQuerySearch) {
-                        if (
-                          !(
-                            values?.peralatans[actualIndex]?.nama_peralatan ||
-                            ""
-                          )
+
+                      const shouldShowItem = (item) => {
+                        if (item === undefined) return true;
+                        if (!peralatanFilters.length) {
+                          return Object.values(item).some((val) =>
+                            String(val)
+                              .toLowerCase()
+                              .includes(peralatanQuerySearch.toLowerCase())
+                          );
+                        }
+                        return peralatanFilters.some((key) =>
+                          String(item[key])
                             .toLowerCase()
                             .includes(peralatanQuerySearch.toLowerCase())
-                        ) {
-                          return null;
-                        }
-                      }
+                        );
+                      };
+
+                      const isShow = shouldShowItem(item);
                       return (
-                        <tr key={actualIndex} className="border-b">
+                        <tr
+                          key={actualIndex}
+                          className={` ${!isShow ? "hidden" : ""}`}
+                        >
                           <td className="px-3 py-6">
                             <Field
                               name={`peralatans.${actualIndex}.nama_peralatan`}
@@ -1231,7 +1269,20 @@ const TenagaKerjaForm = ({ values, setFieldValue, hide, provincesOptions }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const { setSelectedValue } = useStore();
+  const {
+    setSelectedValue,
+    tenagaKerjaFilters,
+    setTenagaKerjaFilters,
+  } = useStore();
+
+  const filterOptions = [
+    { label: "Jenis Tenaga Kerja", accessor: "jenis_tenaga_kerja", checked: false },
+    { label: "Satuan", accessor: "satuan", checked: false },
+    { label: "Jumlah Kebutuhan", accessor: "jumlah_kebutuhan", checked: false },
+    { label: "Kodefikasi", accessor: "kodefikasi", checked: false },
+    { label: "Provinsi", accessor: "provinsi", checked: false },
+    { label: "Kota", accessor: "kota", checked: false },
+  ];
 
   const [tenagaKerjaQuerySearch, setTenagaKerjaQuerySearch] = useState("");
 
@@ -1260,6 +1311,16 @@ const TenagaKerjaForm = ({ values, setFieldValue, hide, provincesOptions }) => {
                     setTenagaKerjaQuerySearch(e);
                   }}
                   withFilter={true}
+                  filterOptions={filterOptions}
+                  onFilterClick={(filters) => {
+                    let tenagaKerjaFilters = [];
+                    filters.forEach((filter) => {
+                      if (filter.checked) {
+                        tenagaKerjaFilters.push(filter.accessor);
+                      }
+                    });
+                    setTenagaKerjaFilters(tenagaKerjaFilters);
+                  }}
                 />
                 <Button
                   variant="solid_blue"
@@ -1307,23 +1368,32 @@ const TenagaKerjaForm = ({ values, setFieldValue, hide, provincesOptions }) => {
                   </tr>
                 </thead>
                 <tbody className="bg-surface-light-background">
-                  {paginatedTenagaKerjas.map((_, index) => {
+                  {paginatedTenagaKerjas.map((item, index) => {
                     const actualIndex =
                       (currentPage - 1) * itemsPerPage + index;
-                    if (tenagaKerjaQuerySearch) {
-                      if (
-                        !(
-                          values?.tenagaKerjas[actualIndex]
-                            ?.jenis_tenaga_kerja || ""
-                        )
+                    
+                    const shouldShowItem = (item) => {
+                      if (item === undefined) return true;
+                      if (!tenagaKerjaFilters.length) {
+                        return Object.values(item).some((val) =>
+                          String(val)
+                            .toLowerCase()
+                            .includes(tenagaKerjaQuerySearch.toLowerCase())
+                        );
+                      }
+                      return tenagaKerjaFilters.some((key) =>
+                        String(item[key])
                           .toLowerCase()
                           .includes(tenagaKerjaQuerySearch.toLowerCase())
-                      ) {
-                        return null;
-                      }
+                      );
                     }
+
+                    const isShow = shouldShowItem(item);
                     return (
-                      <tr key={actualIndex} className="border-b">
+                      <tr
+                        key={actualIndex}
+                        className={` ${!isShow ? "hidden" : ""}`}
+                      >
                         <td className="px-3 py-6">
                           <Field
                             name={`tenagaKerjas.${actualIndex}.jenis_tenaga_kerja`}
