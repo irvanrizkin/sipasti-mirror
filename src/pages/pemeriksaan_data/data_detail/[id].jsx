@@ -92,7 +92,7 @@ function App() {
             placeholder="Masukkan Provinsi"
             size="Medium"
             labelWidth="100px"
-            // disabledActive={true}
+            disabledActive={true}
             value={dataEntri?.provinsi || ""}
           />
           <TextInput
@@ -101,7 +101,7 @@ function App() {
             placeholder="Masukkan Kabupaten/Kota"
             size="Medium"
             labelWidth="100px"
-            // disabledActive={true}
+            disabledActive={true}
             value={dataEntri?.kota || ""}
           />
           <TextInput
@@ -110,7 +110,7 @@ function App() {
             placeholder="Masukkan Nama Responden/Vendor"
             size="Medium"
             labelWidth="100px"
-            // disabledActive={true}
+            disabledActive={true}
             value={dataEntri?.nama_responden || ""}
           />
           <TextInput
@@ -119,7 +119,7 @@ function App() {
             placeholder="Masukkan Alamat"
             size="Medium"
             labelWidth="100px"
-            // disabledActive={true}
+            disabledActive={true}
             value={dataEntri?.alamat || ""}
             // labelMargin="150px"
           />
@@ -129,7 +129,7 @@ function App() {
             placeholder="Masukkan Nomor Kontak"
             size="Medium"
             labelWidth="100px"
-            // disabledActive={true}
+            disabledActive={true}
             value={dataEntri?.no_telepon || ""}
           />
           <TextInput
@@ -138,7 +138,7 @@ function App() {
             placeholder="Masukkan Kategori"
             size="Medium"
             labelWidth="100px"
-            // disabledActive={true}
+            disabledActive={true}
             value={dataEntri?.kategori_responden || ""}
           />
         </div>
