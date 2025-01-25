@@ -100,12 +100,6 @@ const SearchBox = ({
                   />
                 </div>
               ))}
-              <button
-                onClick={applyFilters}
-                className="mt-4 w-full bg-custom-blue-500 text-white py-2 px-4 rounded-[8px] hover:bg-custom-blue-600 transition-colors duration-200"
-              >
-                Terapkan
-              </button>
             </div>
           )}
         </div>

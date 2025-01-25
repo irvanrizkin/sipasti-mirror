@@ -197,36 +197,36 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
   const [deletedDataTenagaKerja, setDeletedDataTenagaKerja] = useState([]);
   const itemsPerPage = 10;
   const filterOptionsMaterial = [
-    { label: "Material", accessor: "nama_vendor", checked: false },
-    { label: "Satuan", accessor: "sumber_daya", checked: false },
-    { label: "Spesifikasi", accessor: "pemilik_vendor", checked: false },
-    { label: "Ukuran", accessor: "alamat", checked: false },
-    { label: "Kodefikasi", accessor: "kontak", checked: false },
-    { label: "Kelompok Material", accessor: "kontak", checked: false },
-    { label: "Jumlah Kebutuhan", accessor: "kontak", checked: false },
-    { label: "Merk", accessor: "kontak", checked: false },
-    { label: "Provinsi", accessor: "kontak", checked: false },
-    { label: "Kabupaten/Kota", accessor: "kontak", checked: false },
+    { label: "Nama Material", accessor: "nama_material", checked: false },
+    { label: "Satuan", accessor: "satuan", checked: false },
+    { label: "Spesifikasi", accessor: "spesifikasi", checked: false },
+    { label: "Ukuran", accessor: "ukuran", checked: false },
+    { label: "Kodefikasi", accessor: "kodefikasi", checked: false },
+    { label: "Kelompok Material", accessor: "kelompok_material", checked: false },
+    { label: "Jumlah Kebutuhan", accessor: "jumlah_kebutuhan", checked: false },
+    { label: "Merk", accessor: "merk", checked: false },
+    { label: "Provinsi", accessor: "provinsi", checked: false },
+    { label: "Kabupaten/Kota", accessor: "kota", checked: false },
   ];
   const filterOptionsPeralatan = [
-    { label: "Nama Peralatan", accessor: "nama_vendor", checked: false },
-    { label: "Satuan", accessor: "sumber_daya", checked: false },
-    { label: "Spesifikasi", accessor: "pemilik_vendor", checked: false },
-    { label: "Kapasitas", accessor: "alamat", checked: false },
-    { label: "Kodefikasi", accessor: "kontak", checked: false },
-    { label: "Kelompok Peralatan", accessor: "kontak", checked: false },
-    { label: "Jumlah Kebutuhan", accessor: "kontak", checked: false },
-    { label: "Merk", accessor: "kontak", checked: false },
-    { label: "Provinsi", accessor: "kontak", checked: false },
-    { label: "Kabupaten/Kota", accessor: "kontak", checked: false },
+    { label: "Nama Peralatan", accessor: "nama_peralatan", checked: false },
+    { label: "Satuan", accessor: "satuan", checked: false },
+    { label: "Spesifikasi", accessor: "spesifikasi", checked: false },
+    { label: "Kapasitas", accessor: "kapasitas", checked: false },
+    { label: "Kodefikasi", accessor: "kodefikasi", checked: false },
+    { label: "Kelompok Peralatan", accessor: "kelompok_peralatan", checked: false },
+    { label: "Jumlah Kebutuhan", accessor: "jumlah_kebutuhan", checked: false },
+    { label: "Merk", accessor: "merk", checked: false },
+    { label: "Provinsi", accessor: "provinsi", checked: false },
+    { label: "Kabupaten/Kota", accessor: "kota", checked: false },
   ];
   const filterOptionsTenagaKerja = [
-    { label: "Nama Pekerja", accessor: "nama_vendor", checked: false },
-    { label: "Satuan", accessor: "sumber_daya", checked: false },
-    { label: "Jumlah Kebutuhan", accessor: "pemilik_vendor", checked: false },
-    { label: "Kodefikasi", accessor: "kontak", checked: false },
-    { label: "Provinsi", accessor: "kontak", checked: false },
-    { label: "Kabupaten/Kota", accessor: "kontak", checked: false },
+    { label: "Nama Pekerja", accessor: "jenis_tenaga_kerja", checked: false },
+    { label: "Satuan", accessor: "satuan", checked: false },
+    { label: "Jumlah Kebutuhan", accessor: "jumlah_kebutuhan", checked: false },
+    { label: "Kodefikasi", accessor: "kodefikasi", checked: false },
+    { label: "Provinsi", accessor: "provinsi", checked: false },
+    { label: "Kabupaten/Kota", accessor: "kota", checked: false },
   ];
   const filterOptionsVendor = [
     { label: "Responden/Vendor", accessor: "nama_vendor", checked: false },
@@ -320,16 +320,21 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
     setSearchPeralatanQuery(query);
 
     if (!query) {
-      setEquipmentData(allDataPeralatan);
+      setDataPeralatan(allDataPeralatan);
       return;
     }
 
-    const filteredPeralatan = allDataPeralatan.filter((item) =>
-      Object.values(item).some((val) =>
-        String(val).toLowerCase().includes(query.toLowerCase())
-      )
-    );
-    setEquipmentData(filteredPeralatan); // Ganti setDataPeralatan dengan setEquipmentData
+    const filteredPeralatan = allDataPeralatan.filter((item) => {
+      if (!peralatanFilters.length) {
+        return Object.values(item).some((val) => {
+          return String(val).toLowerCase().includes(query.toLowerCase());
+        })
+      }
+      return peralatanFilters.some((key) => {
+        return String(item[key]).toLowerCase().includes(query.toLowerCase())
+      })
+    })
+    setDataPeralatan(filteredPeralatan);
   };
 
   // Search for Tenaga Kerja
@@ -341,11 +346,16 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
       return;
     }
 
-    const filteredTenagaKerja = allDataTenagaKerja.filter((item) =>
-      Object.values(item).some((val) =>
-        String(val).toLowerCase().includes(query.toLowerCase())
-      )
-    );
+    const filteredTenagaKerja = allDataTenagaKerja.filter((item) => {
+      if (!tenagaKerjaFilters.length) {
+        return Object.values(item).some((val) => {
+          return String(val).toLowerCase().includes(query.toLowerCase());
+        })
+      }
+      return tenagaKerjaFilters.some((key) => {
+        return String(item[key]).toLowerCase().includes(query.toLowerCase());
+      })
+    })
     setDataTenagaKerja(filteredTenagaKerja);
   };
   const handleSearchVendor = (query) => {
@@ -393,9 +403,15 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
   const {
     vendorFilters,
     materialFilters,
+    peralatanFilters,
+    tenagaKerjaFilters,
     setVendorFilters,
     setMaterialFilters,
+    setPeralatanFilters,
+    setTenagaKerjaFilters,
   } = tahap4Store();
+
+  console.log('tenagaKerjaFilters', tenagaKerjaFilters);
 
   const handleAdjustData = async () => {
     if (!selectedVendorId) {
@@ -578,8 +594,17 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
                         withFilter={true}
                         filterOptions={filterOptionsPeralatan}
                         onFilterClick={(filters) => {
-                          console.log("Filter option clicked:", filters); // Debug
-                          handleFilterClick(filters);
+                          let peralatanFilters = [];
+                          for (const filter of filters) {
+                            if (filter.checked) {
+                              peralatanFilters.push(filter.accessor);
+                            } else {
+                              peralatanFilters = peralatanFilters.filter(
+                                (item) => item !== filter.accessor
+                              );
+                            }
+                          }
+                          setPeralatanFilters(peralatanFilters);
                         }}
                       />
                       <Table
@@ -590,7 +615,7 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
                           },
                           { title: "Satuan", accessor: "satuan" },
                           { title: "Spesifikasi", accessor: "spesifikasi" },
-                          { title: "Kapasitas", accessor: "satuan" },
+                          { title: "Kapasitas", accessor: "kapasitas" },
                           { title: "Kodefikasi", accessor: "kodefikasi" },
                           {
                             title: "Kelompok Peralatan",
@@ -628,8 +653,17 @@ const Tahap4 = ({ onNext, onBack, onClose }) => {
                         withFilter={true}
                         filterOptions={filterOptionsTenagaKerja}
                         onFilterClick={(filters) => {
-                          console.log("Filter option clicked:", filters); // Debug
-                          handleFilterClick(filters);
+                          let tenagaKerjaFilters = [];
+                          for (const filter of filters) {
+                            if (filter.checked) {
+                              tenagaKerjaFilters.push(filter.accessor);
+                            } else {
+                              tenagaKerjaFilters = tenagaKerjaFilters.filter(
+                                (item) => item !== filter.accessor
+                              );
+                            }
+                          }
+                          setTenagaKerjaFilters(tenagaKerjaFilters);
                         }}
                       />
                       <Table
