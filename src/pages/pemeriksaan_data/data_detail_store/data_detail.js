@@ -10,12 +10,12 @@ export const datadetail_store = create((set) => ({
   pemeriksaanData: [],
   dataEntri: null,
   initialValues: {
-    user_id_petugas_lapangan: "",
-    user_id_pengawas: "",
-    data_vendor_id: "",
-    identifikasi_kebutuhan_id: "",
+    // user_id_petugas_lapangan: "",
+    // user_id_pengawas: "",
+    // data_vendor_id: "",
+    // identifikasi_kebutuhan_id: "",
     nama_pemberi_informasi: "",
-    tanggal_survei: "",
+    // tanggal_survei: "",
   },
 
   material: null,
@@ -76,13 +76,13 @@ export const datadetail_store = create((set) => ({
         tenaga_kerja: data.data.tenaga_kerja || [],
         initialValues: {
           ...state.initialValues,
-          data_vendor_id: data.data.data_vendor_id || "",
-          identifikasi_kebutuhan_id: data.data.identifikasi_kebutuhan_id || "",
+          // data_vendor_id: data.data.data_vendor_id || "",
+          // identifikasi_kebutuhan_id: data.data.identifikasi_kebutuhan_id || "",
           nama_pemberi_informasi:
             data.data.keterangan_pemberi_informasi?.nama_pemberi_informasi ||
             "",
-          tanggal_survei:
-            data.data.keterangan_petugas_lapangan?.tanggal_survei || "",
+          // tanggal_survei:
+          //   data.data.keterangan_petugas_lapangan?.tanggal_survei || "",
         },
       }));
 

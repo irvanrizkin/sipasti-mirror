@@ -41,6 +41,7 @@ function App() {
     userOptions,
     fetchPengawasUserOptions,
     pengawasUserOptions,
+    initialValues,
   } = useStore(datadetail_store);
 
   const [berita_acara, setBerita_Acara] = useState(null);
@@ -70,9 +71,10 @@ function App() {
     if (id) {
       console.log("shortlist_id yang dikirim:", id);
       fetchDataEntriData(id);
-      fetchPemeriksaanData(id);
+      // fetchPemeriksaanData(id);
       fetchUserOptions();
       fetchPengawasUserOptions();
+      
     }
   }, [
     id,
@@ -147,7 +149,6 @@ function App() {
   };
 
   const KeteranganPetugasLapanganForm = ({ values, setFieldValue }) => {
-    console.log(values)
     return (
       <div>
         <LocalizationProvider dateAdapter={AdapterDayjs} locale="id">
@@ -332,9 +333,9 @@ function App() {
                 size="Medium"
                 errorMessage="Nama Pemberi Informasi/Jabatan"
                 value={values.nama_pemberi_informasi || ""}
-                onChange={(e) =>
-                  setFieldValue("nama_pemberi_informasi", e.target.value)
-                }
+                onChange={(e) => {
+                  setFieldValue("nama_pemberi_informasi", e.target.value);
+                }}
                 // disabledActive={true}
               />
               <TextInput
@@ -1482,12 +1483,12 @@ function App() {
       });
     }
   };
-
+  
   return (
     <div className="p-8">
       <Navbar />
       <h3 className="text-H3 text-emphasis-on_surface-high">Pengawasan</h3>
-      <Formik initialValues={{ catatan_blok_1: "" }} onSubmit={handleSubmit}>
+      <Formik initialValues={initialValues} onSubmit={handleSubmit} enableReinitialize={true}>
         {({ values, setFieldValue }) => (
           <Form>
             <h4 className="text-H4 mt-4 mb-3 text-emphasis-on_surface-high">
