@@ -37,6 +37,10 @@ function App() {
     fetchDataEntriData,
     updateStatus,
     nama_pemberi_informasi,
+    fetchUserOptions,
+    userOptions,
+    fetchPengawasUserOptions,
+    pengawasUserOptions,
   } = useStore(datadetail_store);
 
   const [berita_acara, setBerita_Acara] = useState(null);
@@ -67,8 +71,16 @@ function App() {
       console.log("shortlist_id yang dikirim:", id);
       fetchDataEntriData(id);
       fetchPemeriksaanData(id);
+      fetchUserOptions();
+      fetchPengawasUserOptions();
     }
-  }, [id, fetchDataEntriData, fetchPemeriksaanData]);
+  }, [
+    id,
+    fetchDataEntriData,
+    fetchPemeriksaanData,
+    fetchUserOptions,
+    fetchPengawasUserOptions
+  ]);
 
   const KeteranganTempatForm = ({ values, setFieldValue }) => {
     return (
@@ -135,12 +147,13 @@ function App() {
   };
 
   const KeteranganPetugasLapanganForm = ({ values, setFieldValue }) => {
+    console.log(values)
     return (
       <div>
         <LocalizationProvider dateAdapter={AdapterDayjs} locale="id">
           <div className="mt-3 bg-neutral-100 px-6 py-8 rounded-[16px]">
             <div className=" space-y-8">
-              <TextInput
+              {/* <TextInput
                 label="Nama Petugas Lapangan"
                 labelPosition="left"
                 placeholder="Nama Petugas Lapangan kosong"
@@ -150,7 +163,33 @@ function App() {
                   dataEntri?.keterangan_petugas_lapangan
                     ?.nama_petugas_lapangan || ""
                 }
-                // disabledActive={true}
+                disabledActive={true}
+              /> */}
+              <Dropdown
+                options={userOptions}
+                value={() => {
+                  if (dataEntri?.keterangan_petugas_lapangan?.id_petugas_lapangan) {
+                    const user = userOptions.find(
+                      (u) =>
+                        u.value ===
+                        dataEntri?.keterangan_petugas_lapangan?.id_petugas_lapangan.toString()
+                    );
+                    return user;
+                  }
+                  return null;
+                }}
+                isRequired={true}
+                onSelect={(value) => {
+                  const user = userOptions.find((u) => u.value === value.value);
+                  const nip = user?.nip || "";
+
+                  setFieldValue("nip_petugas_lapangan", nip);
+
+                  console.log("user", user);
+                }}
+                placeholder="Pilih Petugas Lapangan"
+                label="Nama Petugas Lapangan"
+                labelPosition="left"
               />
               <TextInput
                 label="NIP"
@@ -159,13 +198,16 @@ function App() {
                 size="Medium"
                 errorMessage="NIP kosong"
                 value={
-                  dataEntri?.keterangan_petugas_lapangan
-                    ?.nip_petugas_lapangan || ""
+                  values?.nip_petugas_lapangan
+                    ? values.nip_petugas_lapangan || ""
+                    : dataEntri?.keterangan_petugas_lapangan
+                        ?.nip_petugas_lapangan || ""
                 }
                 disabledActive={true}
               />
               <div
-                style={{ display: "flex", alignItems: "center", gap: "256px" }}>
+                style={{ display: "flex", alignItems: "center", gap: "256px" }}
+              >
                 <div className="text-B2" style={{ minWidth: "200px" }}>
                   Tanggal Survei
                 </div>
@@ -191,7 +233,7 @@ function App() {
                   }}
                 />
               </div>
-              <TextInput
+              {/* <TextInput
                 label="Nama Pengawas"
                 labelPosition="left"
                 placeholder="Nama Pengawas kosong"
@@ -200,21 +242,50 @@ function App() {
                 value={
                   dataEntri?.keterangan_petugas_lapangan?.nama_pengawas || ""
                 }
-                // disabledActive={true}
+                disabledActive={true}
+              /> */}
+              <Dropdown
+                options={pengawasUserOptions}
+                value={() => {
+                  if (dataEntri?.keterangan_petugas_lapangan?.id_pengawas) {
+                    const user = pengawasUserOptions.find(
+                      (u) => u.value === dataEntri?.keterangan_petugas_lapangan?.id_pengawas.toString()
+                    );
+                    return user;
+                  }
+                  return null;
+                }}
+                isRequired={true}
+                onSelect={(value) => {
+                  console.log('value', value)
+                  const user = pengawasUserOptions.find(
+                    (u) => u.value === value.value
+                  );
+                  const nip = user?.nip || "";
+
+                  setFieldValue("nip_pengawas", nip);
+                }}
+                placeholder="Pilih Pengawas"
+                label="Nama Pengawas"
+                labelPosition="left"
               />
               <TextInput
-                label=" Pengawas"
+                label="NIP Pengawas"
                 labelPosition="left"
                 placeholder=" Pengawas kosong"
                 size="Medium"
                 errorMessage=" Pengawas kosong"
                 value={
-                  dataEntri?.keterangan_petugas_lapangan?.nip_pengawas || ""
+                  values?.nip_pengawas
+                    ? values.nip_pengawas || ""
+                    : dataEntri?.keterangan_petugas_lapangan
+                        ?.nip_pengawas || ""
                 }
                 disabledActive={true}
               />
               <div
-                style={{ display: "flex", alignItems: "center", gap: "256px" }}>
+                style={{ display: "flex", alignItems: "center", gap: "256px" }}
+              >
                 <div className="text-B2" style={{ minWidth: "200px" }}>
                   Tanggal Pengawasan
                 </div>

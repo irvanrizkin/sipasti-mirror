@@ -22,6 +22,7 @@ export const datadetail_store = create((set) => ({
   peralatan: null,
   tenaga_kerja: null,
   setSelectedValue: (value) => set({ selectedValue: value }),
+  // For Dropdown
   fetchUserOptions: async () => {
     try {
       const response = await axios.get(
@@ -31,12 +32,31 @@ export const datadetail_store = create((set) => ({
         response.data?.data.map((user) => ({
           value: user.user_id,
           label: user.nama_lengkap,
+          nip: user.nip,
         })) || [];
       set({ userOptions: options });
-      console.log("User options berhasil diambil:", options);
     } catch (error) {
       console.error(
         "Error fetching user options:",
+        error.response?.data || error.message
+      );
+    }
+  },
+  fetchPengawasUserOptions: async () => {
+    try {
+      const response = await axios.get(
+        "https://api-ecatalogue-staging.online/api/pengumpulan-data/list-user?role=Pengawas"
+      );
+      const options =
+        response.data?.data.map((user) => ({
+          value: user.user_id,
+          label: user.nama_lengkap,
+          nip: user.nip,
+        })) || [];
+      set({ pengawasUserOptions: options });
+    } catch (error) {
+      console.error(
+        "Error fetching pengawas user options:",
         error.response?.data || error.message
       );
     }
