@@ -9,9 +9,11 @@ export const datadetail_store = create((set) => ({
   pengawasUserOptions: [],
   pemeriksaanData: [],
   dataEntri: null,
+  identifikasi_kebutuhan_id: null,
+  data_vendor_id: null,
   initialValues: {
-    // user_id_petugas_lapangan: "",
-    // user_id_pengawas: "",
+    user_id_petugas_lapangan: "",
+    user_id_pengawas: "",
     // data_vendor_id: "",
     // identifikasi_kebutuhan_id: "",
     nama_pemberi_informasi: "",
@@ -72,8 +74,10 @@ export const datadetail_store = create((set) => ({
       set((state) => ({
         dataEntri: data.data,
         material: data.data.material || [],
-        peralatan: data.data.peralatan || [],
+        peralatan: data?.data?.peralatan || [],
         tenaga_kerja: data.data.tenaga_kerja || [],
+        identifikasi_kebutuhan_id: data.data.identifikasi_kebutuhan_id ?? null,
+        data_vendor_id: data.data.data_vendor_id ?? null,
         initialValues: {
           ...state.initialValues,
           // data_vendor_id: data.data.data_vendor_id || "",
@@ -81,8 +85,16 @@ export const datadetail_store = create((set) => ({
           nama_pemberi_informasi:
             data.data.keterangan_pemberi_informasi?.nama_pemberi_informasi ||
             "",
-          // tanggal_survei:
-          //   data.data.keterangan_petugas_lapangan?.tanggal_survei || "",
+          peralatan: data.data.peralatan || [],
+          material: data.data.material || [],
+          tenaga_kerja: data.data.tenaga_kerja || [],
+          user_id_petugas_lapangan: data.data?.keterangan_petugas_lapangan.id_petugas_lapangan.toString(),
+          user_id_pengawas: data.data?.keterangan_petugas_lapangan.id_pengawas.toString(),
+          tanggal_survei:
+            data.data.keterangan_petugas_lapangan?.tanggal_survei || "",
+          tanggal_pengawasan:
+            data.data.keterangan_petugas_lapangan?.tanggal_pengawasan || "",
+          catatan_blok_v: data.data?.catatan_blok_v || "",
         },
       }));
 

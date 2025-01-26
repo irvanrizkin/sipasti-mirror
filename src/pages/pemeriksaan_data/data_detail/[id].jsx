@@ -44,6 +44,8 @@ function App() {
     initialValues,
   } = useStore(datadetail_store);
 
+  console.log("dataEntri", dataEntri);
+
   const [berita_acara, setBerita_Acara] = useState(null);
   const [selectedberitaacara, setselectedBeritaAcara] = useState(null);
   const [error, setError] = useState("");
@@ -185,6 +187,7 @@ function App() {
                   const nip = user?.nip || "";
 
                   setFieldValue("nip_petugas_lapangan", nip);
+                  setFieldValue("user_id_petugas_lapangan", value.value);
 
                   console.log("user", user);
                 }}
@@ -214,7 +217,7 @@ function App() {
                 </div>
                 <DatePicker
                   label="Tanggal Survei"
-                  value={
+                  defaultValue={
                     dataEntri?.keterangan_petugas_lapangan?.tanggal_survei
                       ? dayjs(
                           dataEntri.keterangan_petugas_lapangan.tanggal_survei,
@@ -227,6 +230,10 @@ function App() {
                     textField: {
                       fullWidth: true,
                     },
+                  }}
+                  onChange={(date) => {
+                    const formattedDate = dayjs(date).format("DD-MM-YYYY");
+                    setFieldValue("tanggal_survei", formattedDate);
                   }}
                   localeText={{
                     cancelButtonLabel: "Batal",
@@ -264,6 +271,7 @@ function App() {
                   );
                   const nip = user?.nip || "";
 
+                  setFieldValue("user_id_pengawas", value.value);
                   setFieldValue("nip_pengawas", nip);
                 }}
                 placeholder="Pilih Pengawas"
@@ -292,7 +300,7 @@ function App() {
                 </div>
                 <DatePicker
                   label="Tanggal Pengawasan"
-                  value={
+                  defaultValue={
                     dataEntri?.keterangan_petugas_lapangan?.tanggal_pengawasan
                       ? dayjs(
                           dataEntri.keterangan_petugas_lapangan
@@ -301,6 +309,10 @@ function App() {
                         )
                       : null
                   }
+                  onChange={(date) => {
+                    const formattedDate = dayjs(date).format("DD-MM-YYYY");
+                    setFieldValue("tanggal_pengawasan", formattedDate);
+                  }}
                   // disabled={true}
                   slotProps={{
                     textField: {
@@ -349,6 +361,31 @@ function App() {
                     ?.tanda_tangan_responden || ""
                 }
                 disabledActive={true}
+              />
+            </div>
+          </div>
+        </LocalizationProvider>
+      </div>
+    );
+  };
+
+  const KeteranganCatatan = ({ values, setFieldValue }) => {
+    return (
+      <div>
+        <LocalizationProvider dateAdapter={AdapterDayjs} locale="id">
+          <div className="mt-3 bg-neutral-100 px-6 py-8 rounded-[16px]">
+            <div className=" space-y-8">
+              <TextInput
+                label="Catatan"
+                labelPosition="left"
+                placeholder="Masukkan Catatan"
+                size="Medium"
+                errorMessage="Nama Pemberi Informasi/Jabatan"
+                value={values.catatan_blok_v || ""}
+                onChange={(e) => {
+                  setFieldValue("catatan_blok_v", e.target.value);
+                }}
+                // disabledActive={true}
               />
             </div>
           </div>
@@ -464,7 +501,7 @@ function App() {
     return <div></div>;
   };
 
-  const MaterialForm = ({ hide }) => {
+  const MaterialForm = ({ values, setFieldValue, hide }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -875,12 +912,14 @@ function App() {
     );
   };
 
-  const PeralatanForm = ({ hide }) => {
+  const PeralatanForm = ({ values, setFieldValue, hide }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
+    console.log("values", values);
+
     const paginatedPeralatan =
-      peralatan?.slice(
+      values.peralatan?.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
       ) || [];
@@ -1159,7 +1198,7 @@ function App() {
     );
   };
 
-  const TenagaKerjaForm = ({ hide }) => {
+  const TenagaKerjaForm = ({ values, setFieldValue, hide }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
 
@@ -1364,6 +1403,7 @@ function App() {
 
   const handleSubmit = async (values) => {
     try {
+      console.log("Data yang dikirim:", values);
       const verifikasiValidasi = data
         .filter((item) => item.verified_by !== null)
         .filter((item) => {
@@ -1390,39 +1430,24 @@ function App() {
       const payload = new FormData();
       payload.append("identifikasi_kebutuhan_id", identifikasi_kebutuhan_id);
       payload.append("data_vendor_id", data_vendor_id);
-      payload.append(
-        "user_id_petugas_lapangan",
-        values.nama_petugas_lapangan ||
-          dataEntri?.keterangan_petugas_lapangan?.nama_petugas_lapangan ||
-          ""
-      );
-      payload.append(
-        "user_id_pengawas",
-        values.nama_pengawas ||
-          dataEntri?.keterangan_petugas_lapangan?.nama_pengawas ||
-          ""
-      );
-      payload.append(
-        "nama_pemberi_informasi",
-        values.nama_pemberi_informasi ||
-          dataEntri?.keterangan_pemberi_informasi?.nama_pemberi_informasi ||
-          ""
-      );
-      payload.append(
-        "tanggal_survei",
-        values.tanggal_survei ||
-          dataEntri?.keterangan_petugas_lapangan?.tanggal_survei ||
-          ""
-      );
-      payload.append(
-        "tanggal_pengawasan",
-        values.tanggal_pengawasan ||
-          dataEntri?.keterangan_petugas_lapangan?.tanggal_pengawasan ||
-          ""
-      );
-      payload.append("material", JSON.stringify(values.material || []));
-      payload.append("peralatan", JSON.stringify(values.peralatan || []));
-      payload.append("tenaga_kerja", JSON.stringify(values.tenaga_kerja || []));
+      const blok_2_and_3 = [{
+        user_id_petugas_lapangan: values.user_id_petugas_lapangan ?? null,
+        user_id_pengawas: values.user_id_pengawas ?? null,
+        tanggal_survei: values.tanggal_survei ?? null,
+        tanggal_pengawasan: values.tanggal_pengawasan ?? null,
+        nama_pemberi_informasi: values.nama_pemberi_informasi ?? null,
+      }]
+      payload.append("blok_2_and_3", JSON.stringify(blok_2_and_3));
+      const blok_4 = [{
+        material: values.material || [],
+        peralatan: values.peralatan || [],
+        tenaga_kerja: values.tenaga_kerja || [],
+      }]
+      // payload.append("material", JSON.stringify(values.material || null));
+      // payload.append("peralatan", JSON.stringify(values.peralatan || null));
+      // payload.append("tenaga_kerja", JSON.stringify(values.tenaga_kerja || null));
+      payload.append("blok_4", JSON.stringify(blok_4));
+      payload.append("catatan_blok_v", values.catatan_blok_v || null);
 
       const hasNotMeetingCItem = data.some(
         (c) =>
@@ -1532,7 +1557,10 @@ function App() {
               setFieldValue={setFieldValue}
               hide={selectedValue !== 2}
             />
-            <KeteranganMaterialPeralatanTenagaKerjaForm
+            <h4 className="text-H4 mt-4 mb-3 text-emphasis-on_surface-high">
+              Blok V: Catatan
+            </h4>
+            <KeteranganCatatan
               values={values}
               setFieldValue={setFieldValue}
             />
