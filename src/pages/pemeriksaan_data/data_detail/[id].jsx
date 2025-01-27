@@ -924,6 +924,30 @@ function App() {
         currentPage * itemsPerPage
       ) || [];
 
+    const {
+      // Filters
+      peralatanFilters,
+      setPeralatanFilters,
+    } = useStore(datadetail_store);
+
+    console.log("peralatanFilters", peralatanFilters);
+
+    const peralatanFilterOptions = [
+      { label: "Nama Peralatan", accessor: "nama_peralatan", checked: false },
+      { label: "Spesifikasi", accessor: "spesifikasi", checked: false },
+      { label: "Kapasitas", accessor: "kapasitas", checked: false },
+      { label: "Kodefikasi", accessor: "kodefikasi", checked: false },
+      { label: "Kelompok Peralatan", accessor: "kelompok_peralatan", checked: false },
+      { label: "Jumlah Kebutuhan", accessor: "jumlah_kebutuhan", checked: false },
+      { label: "Provinsi", accessor: "provinsi", checked: false },
+      { label: "Kabupaten/Kota", accessor: "kota", checked: false },
+      { label: "Satuan Setempat", accessor: "satuan_setempat", checked: false },
+      { label: "Harga Sewa Satuan Setempat", accessor: "harga_sewa_satuan_setempat", checked: false },
+      { label: "Harga Sewa Konversi", accessor: "harga_sewa_konversi", checked: false },
+      { label: "Harga Pokok", accessor: "harga_pokok", checked: false },
+      { label: "Keterangan", accessor: "keterangan", checked: false },
+    ]
+
     return (
       <div className={`${hide ? "hidden" : ""}`}>
         <FieldArray name="peralatan">
@@ -941,6 +965,20 @@ function App() {
                   placeholder="Cari Peralatan..."
                   onSearch={() => {}}
                   withFilter={true}
+                  filterOptions={peralatanFilterOptions}
+                  onFilterClick={(filters) => {
+                    let peralatanFilters = [];
+                    for (const filter of filters) {
+                      if (filter.checked) {
+                        peralatanFilters.push(filter.accessor);
+                      } else {
+                        peralatanFilters = peralatanFilters.filter(
+                          (item) => item !== filter.accessor
+                        );
+                      }
+                    }
+                    setPeralatanFilters(peralatanFilters);
+                  }}
                 />
               </div>
               <div className="rounded-[16px] border border-gray-200 overflow-hidden mt-4">

@@ -24,6 +24,8 @@ export const datadetail_store = create((set) => ({
   peralatan: null,
   tenaga_kerja: null,
   setSelectedValue: (value) => set({ selectedValue: value }),
+  peralatanFilters: [],
+  setPeralatanFilters: (filters) => set({ peralatanFilters: filters }),
   // For Dropdown
   fetchUserOptions: async () => {
     try {
