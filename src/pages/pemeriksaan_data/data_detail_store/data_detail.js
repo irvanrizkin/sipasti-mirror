@@ -73,6 +73,9 @@ export const datadetail_store = create((set) => ({
       );
       const data = response.data.data;
 
+      const id_petugas_lapangan = data.data.keterangan_petugas_lapangan.id_petugas_lapangan;
+      const id_pengawas = data.data.keterangan_petugas_lapangan.id_pengawas;
+
       set((state) => ({
         dataEntri: data.data,
         material: data.data.material || [],
@@ -90,8 +93,8 @@ export const datadetail_store = create((set) => ({
           peralatan: data.data.peralatan || [],
           material: data.data.material || [],
           tenaga_kerja: data.data.tenaga_kerja || [],
-          user_id_petugas_lapangan: data.data?.keterangan_petugas_lapangan.id_petugas_lapangan.toString(),
-          user_id_pengawas: data.data?.keterangan_petugas_lapangan.id_pengawas.toString(),
+          user_id_petugas_lapangan: id_petugas_lapangan ? id_petugas_lapangan.toString() : "",
+          user_id_pengawas: id_pengawas ? id_pengawas.toString() : "",
           tanggal_survei:
             data.data.keterangan_petugas_lapangan?.tanggal_survei || "",
           tanggal_pengawasan:
